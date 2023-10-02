@@ -14,26 +14,47 @@ The original schema contains a few errors:
 
 To generate a corrected schema you can use:
 
-    fix_file_errors.apply_fixes(SCHEMA_PATH, FIX_PATH)
+```python
+import fix_file_errors
+fix_file_errors.apply_fixes(
+    schema_root_path='path/to/original/files',
+    fix_path='where/fixed/files/end/up')
+```
 
-Where ```SCHEMA_PATH``` is the path to the unzipped folder from noptis webpage.
-and ```FIX_PATH``` is the folder to which you wish to write the fixed schema to.
+Where ```schema_root_path``` is the path to the unzipped folder from noptis webpage.
+and ```fix_path``` is the folder to which you wish to write the fixed schema to.
+
+Examples:
+
+```python
+import pathlib
+import fix_file_errors
+fix_file_errors.apply_fixes(
+    schema_root_path=pathlib.Path('Downloads/roi/'),
+    fix_path=pathlib.Path('fixed/'))
+```
 
 ### Generate python lib from the schema
 To take things even further you could generate python code from the xml schema.
 
-    fix_file_errors.generate_library(FIX_PATH)
+```python
+import fix_file_errors
+fix_file_errors.generate_library(fixed_files_path='fixed/')
+```
 
-Where ```FIX_PATH``` is the path to the folder where the corrected schema files are.
+Where ```fixed_files_path``` is the path to the folder where the corrected schema files are.
 The code generation will not work with the original schema files.
 
 ### Bonus: Validate xml file
 
-    schema = fix_file_errors.schema_collection(FIX_PATH)
-    schema.roi_from_pub_trans.validate(PATH_TO_XML_FILE)
-
+```python
+import pathlib
+import fix_file_errors
+schema = fix_file_errors.schema_collection(pathlib.Path('fixed/'))
+schema.roi_from_pub_trans.validate(pathlib.Path('test/samples/deviation_case_update_event.xml'))
+```
 
 ## Development
-Setup the development environment with the following script:
+Set up the development environment with the following script:
 
     ./dev_environment_setup.sh
