@@ -1,0 +1,1499 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:ROI="http://www.pubtrans.com/ROI/3.0" xmlns:PT="http://www.pubtrans.com/PT/1.0" xmlns:xs="http://www.w3.org/2001/XMLSchema" targetNamespace="http://www.pubtrans.com/ROI/3.0" elementFormDefault="unqualified" attributeFormDefault="unqualified" version="3.0.8">
+	<xs:annotation>
+		<xs:documentation>
+		This document is a property of NOPTIS. The definition of the interface specification defined in this document is a property of NOPTIS.
+		
+		Copyright © NOPTIS 2006.
+		Final and approved versions of the document may be reproduced or used for the purpose of integrating systems according to the NOPTIS standard.
+		By using this document and the solutions designed herein, the user confirms that the material is not being used in a derogatory manner or in a misleading context.
+		The source of the material must be acknowledged and the title of the content must be included when being reproduced as part of another publication or service.
+				 
+		In order to avoid uncertainties for possible users of the standardised interface NOPTIS it is noted that Hogia Public Transport Systems AB,
+		as the owner of the registered trademark PUBTRANS, gives any user of the NOPTIS interface the right to use the names ToPubTrans, FromPubTrans,
+		ToPubTransMessages, FromPubTransMessages and www.pubtrans.com when – and to the extent - this is required to enable the user to technically interact through the NOPTIS interface.
+		The right of use is limited to the aforesaid and is applicable regardless of whether or not the interaction involves a Hogia product or not.
+			 
+		Version 3.0.0 - Baseline version
+		Version 3.0.1 
+		- Instance is the only abstract complex type.
+		Version 3.0.2 
+		- OriginShortName is optional.
+		- Destination.PrimaryShortName is optional.
+		- VehicleOperator is optional.
+		- DestinationDisplayRef Id attribute added.
+		- VisitCount always defaults to 1.
+		- TimeStamp not needed in TargetAudience, MessageVariant and PublicationScope.
+		- Additional secondary destination types added.
+		- Attribute OperationActionType added to DeviationCase.
+		- Optional element SourceControlAction  added to DeviationCase.
+		- Optional ObservedStop group added in UpdatedArrival and UpdatedDeparture.
+		- simpleType PT:SequenceNumber used in stead of xs:positivetInteger.
+		- LineDesignation added to DestinationDisplay.
+		- VehicleJourneyState attribute renamed State in VehicleJourney elements.
+		- TrainSizeCarCount added toVehicleJourneyAssigment.
+		- PrimaryPlaceRef in DestinationDisplay is optional.
+		- JourneyPatternPointRef in StopScope is of type JourneyPatternPointRef and not StopRef.
+		- Added attribute IsPublic in MessageVariant.
+		Version 3.0.3
+		-Added Arrival.Type and Departure.Type in CreatedArrival and Created Departure. User extended with OrganisationalUnitCode and OrganisationCode. ReportedByUser is optional.
+		-Observed Stop added to CreatedDeparture and CreatedArrival. 
+		-Redundant attribute OperatingDayDate removed from VehicleJourneyAssignment
+		-New target namespace
+		Version 3.0.4
+		-Attribute RevokedDateTime replaced by attribute IsValid in element Publication Decision
+		-Attribute ReplacedFromDateTime replaced by attribute IsValid in element DeviationMessageVersion
+		-Attribute TargetDateTime is optional in ArrivalUpdateEvent and DepartureUpdateEvent
+		Version 3.0.5
+		-Restructured schema. No actual change for users of schema.
+		-Destination group optional for dead runs without destination display information.
+		-OriginName is optional for dead runs.
+		-Annotation added to element MasterDeviationCaseRef
+		-Attribute Gid in StopArea is type PT:StopAreaGid
+		-Attribute Gid in DeviationCase is type PT:DeviationCaseGid
+		-All attributes that should be presented in local time are now of type LocalDateTime
+		-Complex type ServiceRequirement reworked
+		-Complex type DestinationDisplay reworked
+		-Complex type Vehicle reworked
+		-Renamed complex type CreatedArrival to Arrival, CreatedDeparture to Departure for conformity. No actual change for users of schema.
+		-Complex type DatedVehicle restructured. VehicleOperatorRef was added. Line and VehicleOperator element annotation clarified.
+		-Removed redundant attribute CreatedDateTime from DeviationCase.
+		-Added optional attribute CreatedTimestamp to DatedVehicleJourney, MonitoredVehicleJourney, Connection, DeviationCase, DeviationMessageVersion, PublicationDecision and Assignments
+		-Publication Scope reworked to allow multiple Stop Scopes
+		Version 3.0.6
+		-Deviation Message is optional in NetworkDeviation
+		Version 3.0.7
+		-ReportedByUser element added to DeviationMessageVersion
+		-Annotation for RevokedByUser element removed.
+		-DeviationScope group is optional in DeviationCase element.
+		-ComplexType SourceControlAction adjusted.
+   		-Optional attribute IsRestrictedToDeviationScope added to complex type PublicationScope
+   		-Annotation in complex type StopScope adjusted
+   		-Attribute Id in DatedVehicleJourneyRef element ofVehicleJourneyAssignment complex type is optional.
+   		Version 3.0.8
+   		-Annotation for Monitored group  modified.
+ 		-DocumentLayOutVersion type renamed as FromDocumentLayOutVersion.
+ 		-SubscriptionUpdateResponse added.
+ 		Version 3.0.9
+ 		-Added attributes PlannedTypeCode, UsesNamedJourneyPatternId, ReinforcedVehicleJourneyGid and ReinforcedDatedVehicleJourneyId in DatedVehicleJourney.
+		</xs:documentation>
+	</xs:annotation>
+	<xs:import namespace="http://www.pubtrans.com/PT/1.0" schemaLocation=".\PTShared\PT-SharedTypes.xsd"/>
+	<!--== Uses XMLStream based trasport mechanism == -->
+	<xs:import namespace="http://www.pubtrans.com/PT/1.0" schemaLocation=".\PTShared\PT-XMLStream.xsd"/>
+	<!--======================================================================================== -->
+	<xs:include schemaLocation="ROI-SharedTypes.xsd"/>
+	<xs:element name="FromPubTransMessages" type="ROI:FromPubTransMessages"/>
+	<!--======================================================================================== -->
+	<xs:complexType name="FromPubTransMessages">
+		<xs:complexContent>
+			<xs:extension base="PT:Messages">
+				<xs:choice maxOccurs="unbounded">
+					<xs:group ref="PT:SystemMessages"/>
+					<xs:group ref="ROI:VehicleJourneyCreateEvents"/>
+					<xs:group ref="ROI:VehicleJourneyDeleteEvents"/>
+					<xs:group ref="ROI:VehicleJourneyUpdateEvents"/>
+					<xs:group ref="ROI:DeviationCaseCreateEvents"/>
+					<xs:group ref="ROI:DeviationCaseUpdateEvents"/>
+					<xs:group ref="ROI:OtherEvents"/>
+					<xs:group ref="ROI:SubscriptionMessages"/>
+				</xs:choice>
+				<xs:attribute name="DocumentLayoutVersion" type="ROI:FromDocumentLayoutVersion" use="required"/>
+				<xs:attribute name="LocalTimeZoneOffsetTime" type="xs:duration" use="required">
+					<xs:annotation>
+						<xs:documentation>Describes the local time zone offset without compensation for daylight saving time ( i.e. always +1 hour for Sweden)</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+				<xs:attribute name="LocalLanguage" type="xs:language" use="required">
+					<xs:annotation>
+						<xs:documentation>Describes the default language for texts</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<!-- -->
+	<xs:group name="SubscriptionMessages">
+		<xs:choice>
+			<xs:element name="SynchronisationReport" type="ROI:SynchronisationReport"/>
+			<xs:element name="SubscriptionResponse" type="ROI:SubscriptionResponse"/>
+			<xs:element name="SubscriptionUpdateResponse" type="ROI:SubscriptionResponse"/>
+			<xs:element name="SubscriptionResumeResponse" type="ROI:SubscriptionResumeResponse"/>
+			<xs:element name="SubscriptionTerminationResponse" type="ROI:SubscriptionTerminationResponse"/>
+			<xs:element name="SubscriptionErrorReport" type="ROI:SubscriptionErrorReport"/>
+			<xs:element name="SubscriptionErrorResponse" type="ROI:SubscriptionErrorResponse"/>
+		</xs:choice>
+	</xs:group>
+	<!-- -->
+	<xs:group name="VehicleJourneyCreateEvents">
+		<xs:choice>
+			<xs:element name="VehicleJourneyCreateEvent" type="ROI:DatedVehicleJourneyCreateEvent"/>
+			<xs:element name="ArrivalCreateEvent" type="ROI:ArrivalCreateEvent"/>
+			<xs:element name="DepartureCreateEvent" type="ROI:DepartureCreateEvent"/>
+			<xs:element name="ConnectionCreateEvent" type="ROI:ConnectionCreateEvent"/>
+		</xs:choice>
+	</xs:group>
+	<!-- -->
+	<xs:group name="VehicleJourneyDeleteEvents">
+		<xs:choice>
+			<xs:element name="DatedVehicleJourneyDeleteEvent" type="ROI:DatedVehicleJourneyDeleteEvent">
+				<xs:annotation>
+					<xs:documentation>This event is only relevant for dated vehicle journeys that are removed before there intended operating day.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="ConnectionDeleteEvent" type="ROI:ConnectionDeleteEvent"/>
+		</xs:choice>
+	</xs:group>
+	<!-- -->
+	<xs:group name="VehicleJourneyUpdateEvents">
+		<xs:choice>
+			<xs:element name="VehicleJourneyUpdateEvent" type="ROI:VehicleJourneyUpdateEvent"/>
+			<xs:element name="ArrivalUpdateEvent" type="ROI:ArrivalUpdateEvent"/>
+			<xs:element name="DepartureUpdateEvent" type="ROI:DepartureUpdateEvent"/>
+			<xs:element name="VehicleJourneyDeviationEvent" type="ROI:VehicleJourneyDeviationEvent"/>
+			<xs:element name="ArrivalDeviationEvent" type="ROI:ArrivalDeviationEvent"/>
+			<xs:element name="DepartureDeviationEvent" type="ROI:DepartureDeviationEvent"/>
+			<xs:element name="ConnectionUpdateEvent" type="ROI:ConnectionUpdateEvent"/>
+		</xs:choice>
+	</xs:group>
+	<!-- -->
+	<xs:group name="DeviationCaseCreateEvents">
+		<xs:choice>
+			<xs:element name="DeviationCaseCreateEvent" type="ROI:DeviationCaseEvent"/>
+		</xs:choice>
+	</xs:group>
+	<!-- -->
+	<xs:group name="DeviationCaseUpdateEvents">
+		<xs:choice>
+			<xs:element name="DeviationCaseUpdateEvent" type="ROI:DeviationCaseEvent"/>
+			<xs:element name="DeviationMessageVersionEvent" type="ROI:DeviationMessageVersionEvent"/>
+			<xs:element name="PublicationDecisionEvent" type="ROI:PublicationDecisionEvent"/>
+		</xs:choice>
+	</xs:group>
+	<!-- -->
+	<xs:group name="OtherEvents">
+		<xs:choice>
+			<xs:element name="AssignmentEvent" type="ROI:AssignmentEvent"/>
+			<xs:element name="NetworkDeviationEvent" type="ROI:NetworkDeviationEvent"/>
+		</xs:choice>
+	</xs:group>
+	<!-- -->
+	<xs:complexType name="DatedVehicleJourneyCreateEvent">
+		<xs:complexContent>
+			<xs:extension base="PT:Report">
+				<xs:sequence>
+					<xs:element name="DatedVehicleJourney" type="ROI:DatedVehicleJourney"/>
+					<xs:element name="MonitoredVehicleJourney" type="ROI:MonitoredVehicleJourney" minOccurs="0">
+						<xs:annotation>
+							<xs:documentation>Provided if the vehicle journey is already, or has been, in progress when this event is transferred.</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<!-- -->
+	<xs:complexType name="VehicleJourneyUpdateEvent">
+		<xs:complexContent>
+			<xs:extension base="PT:Report">
+				<xs:choice>
+					<xs:element name="DatedVehicleJourney" type="ROI:UpdatedDatedVehicleJourney"/>
+					<xs:element name="MonitoredVehicleJourney" type="ROI:MonitoredVehicleJourney"/>
+				</xs:choice>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<!-- -->
+	<xs:complexType name="DatedVehicleJourneyDeleteEvent">
+		<xs:annotation>
+			<xs:documentation>This dated vehicle journey instance is invalid and should be removed as well as its arrivals and departures.</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="PT:Report">
+				<xs:sequence>
+					<xs:element name="DatedVehicleJourneyRef" type="ROI:DatedVehicleJourneyRef"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<!-- -->
+	<xs:complexType name="ConnectionDeleteEvent">
+		<xs:annotation>
+			<xs:documentation>This connection instance is invalid and should be removed.</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="PT:Report">
+				<xs:sequence>
+					<xs:element name="Connection" type="ROI:DeletedConnection"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<!-- -->
+	<xs:complexType name="DepartureCreateEvent">
+		<xs:complexContent>
+			<xs:extension base="PT:Report">
+				<xs:sequence>
+					<xs:element name="Departure" type="ROI:Departure"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<!---->
+	<xs:complexType name="DepartureUpdateEvent">
+		<xs:complexContent>
+			<xs:extension base="PT:Report">
+				<xs:sequence>
+					<xs:element name="Departure" type="ROI:UpdatedDeparture"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<!-- -->
+	<xs:complexType name="ArrivalCreateEvent">
+		<xs:complexContent>
+			<xs:extension base="PT:Report">
+				<xs:sequence>
+					<xs:element name="Arrival" type="ROI:Arrival"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<!-- -->
+	<xs:complexType name="ArrivalUpdateEvent">
+		<xs:complexContent>
+			<xs:extension base="PT:Report">
+				<xs:sequence>
+					<xs:element name="Arrival" type="ROI:UpdatedArrival"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<!-- -->
+	<xs:complexType name="DepartureDeviationEvent">
+		<xs:complexContent>
+			<xs:extension base="PT:Report">
+				<xs:sequence>
+					<xs:element name="DepartureDeviation" type="ROI:DepartureDeviation"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<!-- -->
+	<xs:complexType name="VehicleJourneyDeviationEvent">
+		<xs:complexContent>
+			<xs:extension base="PT:Report">
+				<xs:sequence>
+					<xs:element name="VehicleJourneyDeviation" type="ROI:VehicleJourneyDeviation">
+						<xs:annotation>
+							<xs:documentation>A deviation that concern all arrivals and departures on a vehicle journey  is exposed as a vehicle journey deviation instead of individual arrival and departure deviations. </xs:documentation>
+						</xs:annotation>
+					</xs:element>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<!-- -->
+	<xs:complexType name="ArrivalDeviationEvent">
+		<xs:complexContent>
+			<xs:extension base="PT:Report">
+				<xs:sequence>
+					<xs:element name="ArrivalDeviation" type="ROI:ArrivalDeviation"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<!-- -->
+	<xs:complexType name="ConnectionUpdateEvent">
+		<xs:complexContent>
+			<xs:extension base="PT:Report">
+				<xs:sequence>
+					<xs:element name="Connection" type="ROI:UpdatedConnection"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<!-- -->
+	<xs:complexType name="ConnectionCreateEvent">
+		<xs:complexContent>
+			<xs:extension base="PT:Report">
+				<xs:sequence>
+					<xs:element name="Connection" type="ROI:Connection"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<!-- -->
+	<xs:complexType name="DeviationCaseEvent">
+		<xs:complexContent>
+			<xs:extension base="PT:Report">
+				<xs:sequence>
+					<xs:element name="DeviationCase" type="ROI:DeviationCase"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<!-- -->
+	<xs:complexType name="DeviationMessageVersionEvent">
+		<xs:complexContent>
+			<xs:extension base="PT:Report">
+				<xs:sequence>
+					<xs:element name="DeviationMessageVersion" type="ROI:DeviationMessageVersion"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<!-- -->
+	<xs:complexType name="PublicationDecisionEvent">
+		<xs:complexContent>
+			<xs:extension base="PT:Report">
+				<xs:sequence>
+					<xs:element name="PublicationDecision" type="ROI:PublicationDecision"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<!-- -->
+	<xs:complexType name="AssignmentEvent">
+		<xs:complexContent>
+			<xs:extension base="PT:Report">
+				<xs:sequence>
+					<xs:group ref="ROI:Assignment"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<!-- -->
+	<xs:complexType name="NetworkDeviationEvent">
+		<xs:complexContent>
+			<xs:extension base="PT:Report">
+				<xs:sequence>
+					<xs:element name="NetworkDeviation" type="ROI:NetworkDeviation"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<!-- -->
+	<xs:complexType name="SubscriptionResponse">
+		<xs:complexContent>
+			<xs:extension base="PT:Response">
+				<xs:attribute name="SubscriptionId" type="PT:Id" use="required"/>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<!-- -->
+	<xs:complexType name="SubscriptionTerminationResponse">
+		<xs:complexContent>
+			<xs:extension base="PT:Response">
+				<xs:attribute name="SubscriptionId" type="PT:Id" use="optional">
+					<xs:annotation>
+						<xs:documentation>If the termination request did not pinpoint a specific subscription, then all current subscriptions held by the requesting Peer will be terminated and this attribute omitted in the response.</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<!-- -->
+	<xs:complexType name="SubscriptionResumeResponse">
+		<xs:complexContent>
+			<xs:extension base="PT:Response">
+				<xs:attribute name="SubscriptionId" type="PT:Id" use="optional">
+					<xs:annotation>
+						<xs:documentation>If the resume request did not pinpoint a specific subscription, then all current subscriptions held by the requesting Peer will be resumed and this attribute omitted in the response.</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<!-- -->
+	<xs:complexType name="SubscriptionErrorResponse">
+		<xs:annotation>
+			<xs:documentation>Sent if data of interest for a subscription has been purged from the production plan before it could be transfered. This could be the case if the connection to a subscriber is broken for several days. It could also be sent if the subscriber has requested a start time so far back in time that data is already purged. It could also be sent if the subscriber requests a start time earlier than the start time in a previous request for the same subscription. </xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="PT:ErrorResponse">
+				<xs:attribute name="SubscriptionId" type="PT:Id" use="optional">
+					<xs:annotation>
+						<xs:documentation>If omitted, then this concerns all the client Peers subscriptions.</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<!-- -->
+	<xs:complexType name="SubscriptionErrorReport">
+		<xs:annotation>
+			<xs:documentation> </xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="PT:ErrorReport">
+				<xs:attribute name="SubscriptionId" type="PT:Id" use="optional">
+					<xs:annotation>
+						<xs:documentation>If omitted, then this concerns all the client Peers subscriptions.</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<!-- -->
+	<xs:complexType name="SynchronisationReport">
+		<xs:complexContent>
+			<xs:extension base="PT:Report">
+				<xs:attribute name="OnSubscriptionId" type="PT:Id" use="required"/>
+				<xs:attribute name="SynchronisedUptoUtcDateTime" type="xs:dateTime" use="required"/>
+				<xs:attribute name="HasCompletedRecoveryPhase" type="PT:YesNo" use="required"/>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<!-- -->
+	<xs:complexType name="DatedVehicleJourney">
+		<xs:complexContent>
+			<xs:extension base="ROI:OriginalInstance">
+				<xs:sequence>
+					<xs:group ref="ROI:DirectionOfLine" minOccurs="0"/>
+					<xs:group ref="ROI:VehicleOperator" minOccurs="0"/>
+				</xs:sequence>
+				<xs:attribute name="OperatingDayDate" type="xs:date" use="required"/>
+				<xs:attribute name="Gid" type="PT:VehicleJourneyGid" use="required"/>
+				<xs:attribute name="TimetabledStartDateTime" type="PT:LocalDateTime" use="required"/>
+				<xs:attribute name="TimetabledEndDateTime" type="PT:LocalDateTime" use="required"/>
+				<xs:attribute name="State" type="ROI:VehicleJourneyState" use="required">
+					<xs:annotation>
+						<xs:documentation>A dated vehicle journey can be expected, not expected or cancelled.</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+				<xs:attribute name="PlannedTypeCode" type="PT:Code" use="optional" default="NORMAL"/>
+				<xs:attribute name="OriginName" type="PT:Name" use="optional">
+					<xs:annotation>
+						<xs:documentation>This attribute is omitted only for dead runs.</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+				<xs:attribute name="OriginShortName" type="PT:ShortName" use="optional"/>
+				<xs:attribute name="InformPassengersCondition" type="PT:InformPassengersCondition" use="optional"/>
+				<xs:attribute name="IsExpectedToBeMonitored" type="PT:YesNo" use="optional" default="N"/>
+				<xs:attribute name="UsesNamedJourneyPatternId" type="PT:Id" use="optional">
+					<xs:annotation>
+						<xs:documentation>This attribute is provided for extra dated vehicle journeys.</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+				<xs:attribute name="ReinforcedDatedVehicleJourneyId" type="PT:Id" use="optional">
+					<xs:annotation>
+						<xs:documentation>This attribute is provided for extra dated vehicle journeys that are reinforcing or replacing a specifed dated vehicle journey.</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+				<xs:attribute name="ReinforcedVehicleJourneyGid" type="PT:VehicleJourneyGid" use="optional">
+					<xs:annotation>
+						<xs:documentation>This attribute is provided for extra dated vehicle journeys that are reinforcing or replacing a specifed dated vehicle journey.</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<!-- -->
+	<xs:group name="DirectionOfLine">
+		<xs:annotation>
+			<xs:documentation>Provided for service journeys.</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="DirectionOfLineRef" type="PT:DirectionOfLineRef"/>
+			<xs:element name="Line" type="ROI:Line" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Expanded data provided for subscriptions with option ExpandLineData=TRUE if the dated vehicle journey is a service journey. Alternatively, line information can be obtained by joining view DirectionOfLine and Line in DOI.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:group>
+	<!-- -->
+	<xs:group name="VehicleOperator">
+		<xs:sequence>
+			<xs:element name="VehicleOperatorRef" type="ROI:VehicleOperatorRef"/>
+			<xs:element name="VehicleOperator" type="ROI:VehicleOperator" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Expanded data provided for subscriptions with option ExpandVehicleOperatorData=TRUE. Alternatively, vehicle operator information can be obtained by joining view Organisation and Contractor in DOI.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:group>
+	<!-- -->
+	<xs:complexType name="UpdatedDatedVehicleJourney">
+		<xs:complexContent>
+			<xs:extension base="ROI:Instance">
+				<xs:attribute name="State" type="ROI:VehicleJourneyState" use="required">
+					<xs:annotation>
+						<xs:documentation>A dated vehicle journey can be expected, not expected or cancelled.</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+				<xs:attribute name="OriginName" type="PT:Name" use="optional"/>
+				<xs:attribute name="OriginShortName" type="PT:ShortName" use="optional"/>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<!-- -->
+	<xs:complexType name="MonitoredVehicleJourney">
+		<xs:complexContent>
+			<xs:extension base="ROI:OriginalInstance">
+				<xs:sequence>
+					<xs:element name="DatedVehicleJourneyRef" type="ROI:DatedVehicleJourneyRef"/>
+					<xs:group ref="ROI:AssignedVehicle" minOccurs="0"/>
+					<xs:group ref="ROI:LastObservedCall" minOccurs="0"/>
+				</xs:sequence>
+				<xs:attribute name="State" type="ROI:VehicleJourneyState" use="required">
+					<xs:annotation>
+						<xs:documentation>After the vehicle journey becomes monitored (in progress) this vehicle journey state overrides the dated vehicle journey state.</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+				<xs:attribute name="PassengerLevel" type="ROI:PassengerLevel" use="optional">
+					<xs:annotation>
+						<xs:documentation>Provided if information is available.</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+				<xs:attribute name="InProgressFromDateTime" type="PT:LocalDateTime" use="required"/>
+				<xs:attribute name="FinalStateDateTime" type="PT:LocalDateTime" use="optional">
+					<xs:annotation>
+						<xs:documentation>Provided when the vehicle journey reaches a final state.</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+				<xs:attribute name="PredictionState" type="ROI:PredictionState" use="required"/>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<!-- -->
+	<xs:group name="ServiceRequirement">
+		<xs:sequence>
+			<xs:element name="ServiceRequirementRef" type="ROI:ServiceRequirementRef" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Omitted only for extra dated vehicle journeys where the service requirements are unknown.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="ServiceRequirement" type="ROI:ServiceRequirement" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Expanded data provided for subscriptions with option ExpandServiceRequirementData=TRUE. Alternatively available by joining with view ServiceRequirement in DOI.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:group>
+	<!-- -->
+	<xs:complexType name="ServiceRequirement">
+		<xs:attribute name="Id" type="PT:Id" use="required"/>
+		<xs:attribute name="TransportMode" type="PT:TransportMode" use="required"/>
+		<xs:attribute name="CapacitySeatings" type="PT:Count" use="optional"/>
+		<xs:attribute name="CapacityTotal" type="PT:Count" use="optional"/>
+		<xs:attribute name="CapacityPrams" type="PT:Count" use="optional"/>
+		<xs:attribute name="CapacityWheelchairs" type="PT:Count" use="optional"/>
+		<xs:attribute name="BusSizeType" type="ROI:BusSizeType" use="optional"/>
+		<xs:attribute name="TrainSizeCars" type="PT:Count" use="optional"/>
+		<xs:attribute name="TrainSizeShort" type="PT:YesNo" use="optional"/>
+		<xs:attribute name="RequiredEmissionLevel" type="ROI:EmissionLevel" use="optional"/>
+		<xs:attribute name="RequiredFuelType" type="ROI:FuelType" use="optional"/>
+		<xs:attribute name="AccessibilityLowEntrance" type="PT:YesNo" use="optional"/>
+		<xs:attribute name="AccessibilityLiftOrRamp" type="PT:YesNo" use="optional"/>
+		<xs:attribute name="AccessibilityLowFloor" type="PT:YesNo" use="optional"/>
+	</xs:complexType>
+	<!-- -->
+	<xs:complexType name="Vehicle">
+		<xs:attribute name="Id" type="PT:Id" use="required"/>
+		<xs:attribute name="ClassifiedAsTransportMode" type="PT:TransportMode" use="required"/>
+		<xs:attribute name="CapacityStandings" type="PT:Count" use="optional"/>
+		<xs:attribute name="CapacitySeatings" type="PT:Count" use="optional"/>
+		<xs:attribute name="CapacityPrams" type="PT:Count" use="optional"/>
+		<xs:attribute name="CapacityWheelchairs" type="PT:Count" use="optional"/>
+		<xs:attribute name="AccessibilityLowEntrance" type="PT:YesNo" use="optional"/>
+		<xs:attribute name="AccessibilityLift" type="PT:YesNo" use="optional"/>
+		<xs:attribute name="AccessibilityRamp" type="PT:YesNo" use="optional"/>
+		<xs:attribute name="AccessibilityLowFloor" type="PT:YesNo" use="optional"/>
+		<xs:attribute name="SizeLengthMeters" type="PT:Meters" use="optional"/>
+	</xs:complexType>
+	<!-- -->
+	<xs:group name="AssignedVehicle">
+		<xs:annotation>
+			<xs:documentation>May be provided depending on configuration.</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="AssignedVehicleRef" type="PT:VehicleRef"/>
+			<xs:element name="AssignedVehicle" type="ROI:Vehicle" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Expanded data provided for subscriptions with option ExpandVehicleData=TRUE. Alternatively available by joining with view Vehicle in DOI.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:group>
+	<!-- -->
+	<xs:complexType name="UpdatedDeparture">
+		<xs:complexContent>
+			<xs:extension base="ROI:Instance">
+				<xs:sequence>
+					<xs:group ref="ROI:Monitored" minOccurs="0"/>
+					<xs:group ref="ROI:ChangedStop" minOccurs="0"/>
+					<xs:group ref="ROI:ChangedDestination" minOccurs="0"/>
+					<xs:group ref="ROI:ObservedStop" minOccurs="0"/>
+				</xs:sequence>
+				<xs:attribute name="TargetDateTime" type="PT:LocalDateTime"/>
+				<xs:attribute name="EstimatedDateTime" type="PT:LocalDateTime" use="optional"/>
+				<xs:attribute name="ObservedDateTime" type="PT:LocalDateTime" use="optional"/>
+				<xs:attribute name="State" type="ROI:DepartureState" use="required"/>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<!-- -->
+	<xs:complexType name="Departure">
+		<xs:complexContent>
+			<xs:extension base="ROI:Instance">
+				<xs:sequence>
+					<xs:group ref="ROI:VehicleJourney"/>
+					<xs:group ref="ROI:Stop"/>
+					<xs:group ref="ROI:Destination" minOccurs="0"/>
+					<xs:group ref="ROI:ServiceRequirement"/>
+					<xs:group ref="ROI:ObservedStop" minOccurs="0"/>
+				</xs:sequence>
+				<xs:attribute name="TimetabledEarliestDateTime" type="PT:LocalDateTime" use="required"/>
+				<xs:attribute name="TargetDateTime" type="PT:LocalDateTime" use="required"/>
+				<xs:attribute name="EstimatedDateTime" type="PT:LocalDateTime" use="optional"/>
+				<xs:attribute name="ObservedDateTime" type="PT:LocalDateTime" use="optional"/>
+				<xs:attribute name="State" type="ROI:DepartureState" use="required"/>
+				<xs:attribute name="Type" type="PT:DepartureType" use="optional" default="STOP_IF_BOARDING"/>
+				<xs:attribute name="JourneyPatternSequenceNumber" type="PT:SequenceNumber" use="required"/>
+				<xs:attribute name="VisitCountNumber" type="PT:VisitCount" use="optional" default="1">
+					<xs:annotation>
+						<xs:documentation>Normally each stop is called only once on a Journey. However, some Journeys have such JourneyPatterns that the same stop is called again. In such instances more information must be provided so that the central system can distinguish between the first call and consecutive calls. A call refering to the first time a stop is called occurs in the JourneyPattern has VisitCount =  1. The next time the same stop is called  the value 2 should be used.</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<!-- -->
+	<!-- -->
+	<xs:complexType name="UpdatedArrival">
+		<xs:complexContent>
+			<xs:extension base="ROI:Instance">
+				<xs:sequence>
+					<xs:group ref="ROI:Monitored" minOccurs="0"/>
+					<xs:group ref="ROI:ChangedStop" minOccurs="0"/>
+					<xs:group ref="ROI:ObservedStop" minOccurs="0"/>
+				</xs:sequence>
+				<xs:attribute name="TargetDateTime" type="PT:LocalDateTime"/>
+				<xs:attribute name="EstimatedDateTime" type="PT:LocalDateTime" use="optional"/>
+				<xs:attribute name="ObservedDateTime" type="PT:LocalDateTime" use="optional"/>
+				<xs:attribute name="State" type="ROI:ArrivalState" use="required"/>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<!-- -->
+	<xs:complexType name="Arrival">
+		<xs:complexContent>
+			<xs:extension base="ROI:Instance">
+				<xs:sequence>
+					<xs:group ref="ROI:VehicleJourney"/>
+					<xs:group ref="ROI:Stop"/>
+					<xs:group ref="ROI:ObservedStop" minOccurs="0"/>
+				</xs:sequence>
+				<xs:attribute name="TimetabledLatestDateTime" type="PT:LocalDateTime" use="required"/>
+				<xs:attribute name="TargetDateTime" type="PT:LocalDateTime" use="required"/>
+				<xs:attribute name="EstimatedDateTime" type="PT:LocalDateTime" use="optional"/>
+				<xs:attribute name="ObservedDateTime" type="PT:LocalDateTime" use="optional"/>
+				<xs:attribute name="State" type="ROI:ArrivalState" use="required"/>
+				<xs:attribute name="Type" type="PT:ArrivalType" use="optional" default="STOP_IF_ALIGHTING"/>
+				<xs:attribute name="JourneyPatternSequenceNumber" type="PT:SequenceNumber" use="required"/>
+				<xs:attribute name="VisitCountNumber" type="PT:VisitCount" use="optional" default="1">
+					<xs:annotation>
+						<xs:documentation>Normally a journey pattern point is visited only once during a vehicle journey. However, some vehicle journeys have such journey patterns that the same journey pattern point is visited again. In such instances more information must be provided to distinguish between the first and consecutive visits. VisitCount =  2 means that it is the second time a journey pattern point is visited according to the journey pattern.</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<!-- -->
+	<xs:complexType name="Connection">
+		<xs:complexContent>
+			<xs:extension base="ROI:OriginalInstance">
+				<xs:sequence>
+					<xs:element name="ArrivalRef" type="ROI:ArrivalRef"/>
+					<xs:element name="DepartureRef" type="ROI:DepartureRef"/>
+				</xs:sequence>
+				<xs:attribute name="WaitForFeederUntilDateTime" type="PT:LocalDateTime" use="required"/>
+				<xs:attribute name="State" type="ROI:ConnectionState" use="required">
+					<xs:annotation>
+						<xs:documentation>Expected, waiting, released,  failed, cancelled</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+				<xs:attribute name="IsContinuingVehicle" type="PT:YesNo" use="optional" default="N"/>
+				<xs:attribute name="IsExposedToStaff" type="PT:YesNo" use="optional" default="Y"/>
+				<xs:attribute name="IsExposedToPassengers" type="PT:YesNo" use="optional" default="Y"/>
+				<xs:attribute name="MinChangeDuration" type="xs:duration" use="optional"/>
+				<xs:attribute name="MaxReplanDuration" type="xs:duration" use="optional"/>
+				<xs:attribute name="AlertControlCentreAfterDuration" type="xs:duration" use="optional"/>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<!-- -->
+	<xs:complexType name="UpdatedConnection">
+		<xs:complexContent>
+			<xs:extension base="ROI:Instance">
+				<xs:sequence>
+					<xs:element name="ArrivalRef" type="ROI:ArrivalRef"/>
+					<xs:element name="DepartureRef" type="ROI:DepartureRef"/>
+				</xs:sequence>
+				<xs:attribute name="WaitForFeederUntilDateTime" type="PT:LocalDateTime" use="optional">
+					<xs:annotation>
+						<xs:documentation>Only provided if changed.</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+				<xs:attribute name="State" type="ROI:ConnectionState" use="required">
+					<xs:annotation>
+						<xs:documentation>Expected, waiting, released, failed, cancelled</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<!-- -->
+	<xs:complexType name="DeletedConnection">
+		<xs:complexContent>
+			<xs:extension base="ROI:Instance">
+				<xs:sequence>
+					<xs:element name="ArrivalRef" type="ROI:ArrivalRef"/>
+					<xs:element name="DepartureRef" type="ROI:DepartureRef"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<!-- -->
+	<xs:complexType name="DeviationCase">
+		<xs:complexContent>
+			<xs:extension base="ROI:OriginalInstance">
+				<xs:sequence>
+					<xs:group ref="ROI:DeviationScope" minOccurs="0"/>
+					<xs:element name="MasterDeviationCaseRef" type="ROI:DeviationCaseRef" minOccurs="0">
+						<xs:annotation>
+							<xs:documentation>Supplied if this deviation case is grouped under another deviation case. The id attribute indicates the master deviation case instance that was valid when the grouping was performed.</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:element name="DeviationReason" type="ROI:DeviationReason" minOccurs="0"/>
+					<xs:element name="ReplacedByDeviationCaseRef" type="ROI:DeviationCaseRef" minOccurs="0">
+						<xs:annotation>
+							<xs:documentation>Supplied if this instance of the deviation case is revoked and a new instance is available.</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:element name="ReportedByUser" type="ROI:User" minOccurs="0"/>
+					<xs:element name="RevokedByUser" type="ROI:User" minOccurs="0"/>
+					<xs:element name="SourceControlAction" type="ROI:SourceControlAction" minOccurs="0">
+						<xs:annotation>
+							<xs:documentation>This element is provided for subscriptions with option IncludeSourceControlAction =TRUE The structure is according to current RII-ControlAction.xsd</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+				</xs:sequence>
+				<xs:attribute name="OperationActionType" type="ROI:OperationActionType" use="required"/>
+				<xs:attribute name="Gid" type="PT:DeviationCaseGid" use="required"/>
+				<xs:attribute name="ExternalID" type="xs:token" use="optional"/>
+				<xs:attribute name="ExternalSystemID" type="xs:token" use="optional"/>
+				<xs:attribute name="OfficialRegistrationDateTime" type="PT:LocalDateTime" use="optional"/>
+				<xs:attribute name="SourceNote" type="PT:Note" use="optional"/>
+				<xs:attribute name="RevokedFromDateTime" type="PT:LocalDateTime" use="optional"/>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<!-- -->
+	<xs:complexType name="SourceControlAction">
+		<xs:sequence>
+			<xs:any processContents="skip"/>
+		</xs:sequence>
+	</xs:complexType>
+	<!-- -->
+	<xs:complexType name="DeviationReason">
+		<xs:attribute name="StandardCategory" type="ROI:DeviationReasonCategory" use="required"/>
+		<xs:attribute name="CustomCategory" type="xs:token" use="optional"/>
+	</xs:complexType>
+	<!-- -->
+	<xs:complexType name="TargetAudiences">
+		<xs:sequence>
+			<xs:element name="TargetAudience" type="ROI:TargetAudience" maxOccurs="unbounded"/>
+		</xs:sequence>
+	</xs:complexType>
+	<!-- -->
+	<xs:complexType name="MessageVariants">
+		<xs:sequence>
+			<xs:element name="MessageVariant" type="ROI:MessageVariant" maxOccurs="unbounded"/>
+		</xs:sequence>
+	</xs:complexType>
+	<!-- -->
+	<xs:complexType name="PublicationScopes">
+		<xs:sequence>
+			<xs:element name="PublicationScope" type="ROI:PublicationScope" maxOccurs="unbounded"/>
+		</xs:sequence>
+	</xs:complexType>
+	<!-- -->
+	<xs:complexType name="DeviationMessageVersion">
+		<xs:complexContent>
+			<xs:extension base="ROI:OriginalInstance">
+				<xs:sequence>
+					<xs:element name="DeviationCaseRef" type="ROI:DeviationCaseRef"/>
+					<xs:element name="TargetAudiences" type="ROI:TargetAudiences" minOccurs="0"/>
+					<xs:element name="MessageVariants" type="ROI:MessageVariants"/>
+					<xs:element name="Priority" type="ROI:Priority"/>
+					<xs:element name="PublicationScopes" type="ROI:PublicationScopes"/>
+					<xs:element name="ReportedByUser" type="ROI:User"/>
+				</xs:sequence>
+				<xs:attribute name="VersionNumber" type="xs:positiveInteger" use="required"/>
+				<xs:attribute name="PublishFromDateTime" type="PT:LocalDateTime" use="required"/>
+				<xs:attribute name="PublishUptoDateTime" type="PT:LocalDateTime" use="optional"/>
+				<xs:attribute name="RequiresPublicationApproval" type="PT:YesNo" use="optional" default="Y"/>
+				<xs:attribute name="ReminderDateTime" type="PT:LocalDateTime" use="optional"/>
+				<xs:attribute name="ReminderHyperlink" type="xs:token" use="optional"/>
+				<xs:attribute name="IsValid" type="PT:YesNo" use="optional" default="Y">
+					<xs:annotation>
+						<xs:documentation>IsValid=N means that this Deviation Message Version is not valid anymore and should be removed.</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+				<xs:attribute name="InternalNote" type="PT:Note" use="optional"/>
+				<xs:attribute name="PublicNote" type="PT:Note" use="required"/>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<!-- -->
+	<xs:complexType name="User">
+		<xs:sequence>
+			<xs:element name="OrganisationalUnitRef" type="ROI:OrganisationalUnitRef"/>
+		</xs:sequence>
+		<xs:attribute name="Name" type="PT:Name" use="optional"/>
+		<xs:attribute name="OrganisationalUnitCode" use="required"/>
+		<xs:attribute name="OrganisationCode" use="required"/>
+	</xs:complexType>
+	<!-- -->
+	<xs:complexType name="Priority">
+		<xs:attribute name="ImportanceLevel" type="ROI:PriorityLevel" use="required"/>
+		<xs:attribute name="InfluenceLevel" type="ROI:PriorityLevel" use="required"/>
+		<xs:attribute name="UrgencyLevel" type="ROI:PriorityLevel" use="required"/>
+	</xs:complexType>
+	<!-- -->
+	<xs:complexType name="DeviationMessage">
+		<xs:attribute name="PublicNote" type="PT:Note" use="required"/>
+	</xs:complexType>
+	<!-- -->
+	<xs:complexType name="NetworkDeviation">
+		<xs:complexContent>
+			<xs:extension base="ROI:Instance">
+				<xs:sequence>
+					<xs:group ref="ROI:NetworkObjectRef"/>
+					<xs:element name="DeviationCaseRef" type="ROI:DeviationCaseRef"/>
+					<xs:group ref="ROI:DeviationMessage" minOccurs="0"/>
+				</xs:sequence>
+				<xs:attribute name="Status" type="ROI:Status" use="required"/>
+				<xs:attribute name="ValidFromDateTime" type="PT:LocalDateTime" use="required"/>
+				<xs:attribute name="InvalidFromDateTime" type="PT:LocalDateTime" use="optional"/>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<!-- -->
+	<xs:complexType name="VehicleJourneyDeviation">
+		<xs:complexContent>
+			<xs:extension base="ROI:Instance">
+				<xs:sequence>
+					<xs:element name="DatedVehicleJourneyRef" type="ROI:DatedVehicleJourneyRef"/>
+					<xs:element name="DeviationCaseRef" type="ROI:DeviationCaseRef"/>
+					<xs:group ref="ROI:DeviationMessage" minOccurs="0"/>
+				</xs:sequence>
+				<xs:attribute name="Consequence" type="PT:ShortName" use="required"/>
+				<xs:attribute name="IsValid" type="PT:YesNo" use="optional" default="Y">
+					<xs:annotation>
+						<xs:documentation>IsValid=N means that this Vehicle Journey Deviation is not valid anymore and should be removed.</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<!-- -->
+	<xs:group name="AlternateArrivalRef">
+		<xs:annotation>
+			<xs:documentation>Only provided if this deviation affects previous (subscribed) departures.</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="CallRef" type="ROI:CallRef"/>
+		</xs:sequence>
+	</xs:group>
+	<!-- -->
+	<xs:group name="AlternateDepartureRef">
+		<xs:annotation>
+			<xs:documentation>Only provided if this deviation affects later (subscribed) arrivals.</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="CallRef" type="ROI:CallRef"/>
+		</xs:sequence>
+	</xs:group>
+	<!-- -->
+	<xs:group name="LastObservedCall">
+		<xs:annotation>
+			<xs:documentation>Only provided if prediction is unreliable and information is available.</xs:documentation>
+		</xs:annotation>
+		<xs:choice>
+			<xs:element name="LastObservedDepartureRef" type="ROI:ObservedCallRef"/>
+			<xs:element name="LastObservedArrivalRef" type="ROI:ObservedCallRef"/>
+		</xs:choice>
+	</xs:group>
+	<!-- -->
+	<xs:complexType name="ObservedCallRef">
+		<xs:sequence>
+			<xs:element name="DatedVehicleJourneyRef" type="ROI:DatedVehicleJourneyRef"/>
+			<xs:element name="JourneyPatternPointRef" type="PT:JourneyPatternPointRef"/>
+			<xs:element name="StopPoint" type="ROI:StopPoint" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Expanded data provided for subscriptions with option ExpandStopData=TRUE if the journey pattern point is a stop point. Alternatively, stop point information can be obtained by joining view StopPoint and JourneyPatternPoint in DOI.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+		<xs:attribute name="JourneyPatternSequenceNumber" type="PT:SequenceNumber" use="required"/>
+		<xs:attribute name="ObservedDateTime" type="PT:LocalDateTime" use="required"/>
+	</xs:complexType>
+	<!-- -->
+	<xs:complexType name="CallRef">
+		<xs:sequence>
+			<xs:element name="DatedVehicleJourneyRef" type="ROI:DatedVehicleJourneyRef"/>
+			<xs:element name="JourneyPatternPointRef" type="PT:JourneyPatternPointRef"/>
+			<xs:element name="StopPoint" type="ROI:StopPoint" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Expanded data provided for subscriptions with option ExpandStopData=TRUE if the journey pattern point is a stop point. Alternatively, stop point information can be obtained by joining view StopPoint and JourneyPatternPoint in DOI.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+		<xs:attribute name="JourneyPatternSequenceNumber" type="PT:SequenceNumber" use="required"/>
+	</xs:complexType>
+	<!-- -->
+	<xs:complexType name="ArrivalDeviation">
+		<xs:complexContent>
+			<xs:extension base="ROI:Instance">
+				<xs:sequence>
+					<xs:element name="ArrivalRef" type="ROI:ArrivalRef"/>
+					<xs:group ref="ROI:AlternateArrivalRef" minOccurs="0"/>
+					<xs:element name="DeviationCaseRef" type="ROI:DeviationCaseRef"/>
+					<xs:group ref="ROI:DeviationMessage" minOccurs="0"/>
+				</xs:sequence>
+				<xs:attribute name="Consequence" type="PT:ShortName" use="required"/>
+				<xs:attribute name="IsValid" type="PT:YesNo" use="optional" default="Y">
+					<xs:annotation>
+						<xs:documentation>IsValid=N means that this Arrival Deviation is not valid anymore and should be removed.</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<!-- -->
+	<xs:complexType name="DepartureDeviation">
+		<xs:complexContent>
+			<xs:extension base="ROI:Instance">
+				<xs:sequence>
+					<xs:element name="DepartureRef" type="ROI:DepartureRef"/>
+					<xs:group ref="ROI:AlternateDepartureRef" minOccurs="0"/>
+					<xs:element name="DeviationCaseRef" type="ROI:DeviationCaseRef"/>
+					<xs:group ref="ROI:DeviationMessage" minOccurs="0"/>
+				</xs:sequence>
+				<xs:attribute name="Consequence" type="PT:ShortName" use="required"/>
+				<xs:attribute name="IsValid" type="PT:YesNo" use="optional" default="Y">
+					<xs:annotation>
+						<xs:documentation>IsValid=N means that this Departure Deviation is not valid anymore and should be removed.</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<!-- -->
+	<xs:group name="DeviationMessage">
+		<xs:sequence>
+			<xs:element name="DeviationMessageVersionRef" type="ROI:DeviationMessageVersionRef"/>
+			<xs:element name="DeviationMessage" type="ROI:DeviationMessage" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Expanded data provided for subscriptions with option ExpandDeviationMessageData=TRUE. </xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:group>
+	<!-- -->
+	<xs:complexType name="PublicationDecision">
+		<xs:complexContent>
+			<xs:extension base="ROI:OriginalInstance">
+				<xs:sequence>
+					<xs:element name="PublicationScopeRef" type="ROI:PublicationScopeRef"/>
+					<xs:element name="DecidedByUser" type="ROI:User"/>
+				</xs:sequence>
+				<xs:attribute name="IsApproved" type="PT:YesNo" use="required"/>
+				<xs:attribute name="IsValid" type="PT:YesNo" use="optional" default="Y">
+					<xs:annotation>
+						<xs:documentation>IsValid=N means that this Publication Decision is not valid any more and should be removed.</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<!-- -->
+	<xs:complexType name="TargetAudience">
+		<xs:attribute name="Id" type="PT:Id" use="required"/>
+		<xs:attribute name="TypeCode" type="PT:Code" use="required"/>
+	</xs:complexType>
+	<!-- -->
+	<xs:complexType name="StopScope">
+		<xs:group ref="ROI:StopScope" minOccurs="0"/>
+		<xs:attribute name="ConcernsArrivals" type="PT:YesNo" use="optional" default="Y"/>
+		<xs:attribute name="ConcernsDepartures" type="PT:YesNo" use="optional" default="Y"/>
+	</xs:complexType>
+	<!-- -->
+	<xs:complexType name="StopScopes">
+		<xs:sequence>
+			<xs:element name="StopScope" type="ROI:StopScope" maxOccurs="unbounded"/>
+		</xs:sequence>
+	</xs:complexType>
+	<!-- -->
+	<xs:complexType name="PublicationScope">
+		<xs:sequence>
+			<xs:element name="StopScopes" type="ROI:StopScopes" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>If this element is not provided, then then there is no restriction on stop scope.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="LineRef" type="PT:LineRef"/>
+		</xs:sequence>
+		<xs:attribute name="Id" type="PT:Id" use="required"/>
+		<xs:attribute name="IsRestrictedToDeviationScope" type="PT:YesNo" use="optional" default="N"/>
+	</xs:complexType>
+	<!-- -->
+	<xs:complexType name="MessageVariant">
+		<xs:attribute name="Id" type="PT:Id" use="required"/>
+		<xs:attribute name="Content" type="xs:string" use="required"/>
+		<xs:attribute name="ContentType" type="ROI:ContentType" use="required"/>
+		<xs:attribute name="UsageType" type="xs:token" use="required"/>
+		<xs:attribute name="Language" type="xs:language" use="optional"/>
+		<xs:attribute name="IsPublic" type="PT:YesNo" use="optional" default="Y"/>
+	</xs:complexType>
+	<!-- -->
+	<xs:group name="VehicleJourney">
+		<xs:sequence>
+			<xs:element name="DatedVehicleJourneyRef" type="ROI:DatedVehicleJourneyRef"/>
+			<xs:element name="DirectionOfLineRef" type="PT:DirectionOfLineRef" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Provided for Service Journeys.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="MonitoredVehicleJourneyRef" type="ROI:MonitoredVehicleJourneyRef" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Provided if the vehicle journey is already, or has been, in progress when this event is transferred.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:group>
+	<!-- -->
+	<xs:group name="Monitored">
+		<xs:annotation>
+			<xs:documentation>Provided if the vehicle journey is monitored.</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="MonitoredVehicleJourneyRef" type="ROI:MonitoredVehicleJourneyRef"/>
+		</xs:sequence>
+	</xs:group>
+	<!-- -->
+	<xs:group name="ChangedStop">
+		<xs:annotation>
+			<xs:documentation>Only provided in the event that the target stop point is changed.</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="TargetJourneyPatternPointRef" type="PT:JourneyPatternPointRef">
+				<xs:annotation>
+					<xs:documentation>The current target stop point.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="TargetStopPoint" type="ROI:StopPoint" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Expanded data provided for subscriptions with option ExpandStopData=TRUE if the journey pattern point is a stop point. Alternatively, stop point information can be obtained by joining view StopPoint and JourneyPatternPoint in DOI.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="TimetabledJourneyPatternPointRef" type="PT:JourneyPatternPointRef">
+				<xs:annotation>
+					<xs:documentation>After a change of stop point, this element will be provided as a reference to the stop point where the vehicle originally was intended to dock.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="TimetabledStopPoint" type="ROI:StopPoint" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Expanded data provided for subscriptions with option ExpandStopData=TRUE if the timetabled journey pattern point is different from the target journey pattern point and it is a stop point. Alternatively, stop point information can be obtained by joining view StopPoint and JourneyPatternPoint in DOI.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:group>
+	<!-- -->
+	<xs:group name="ObservedStop">
+		<xs:annotation>
+			<xs:documentation>Only provided in the event that the observed stop point is different from the target stop point.</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="ObservedJourneyPatternPointRef" type="PT:JourneyPatternPointRef">
+				<xs:annotation>
+					<xs:documentation>The observed stop point.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="ObservedStopPoint" type="ROI:StopPoint" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Expanded data provided for subscriptions with option ExpandStopData=TRUE if the journey pattern point is a stop point. Alternatively, stop point information can be obtained by joining view StopPoint and JourneyPatternPoint in DOI.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:group>
+	<!-- -->
+	<xs:group name="Stop">
+		<xs:sequence>
+			<xs:element name="TargetJourneyPatternPointRef" type="PT:JourneyPatternPointRef"/>
+			<xs:element name="TargetStopPoint" type="ROI:StopPoint" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Expanded data provided for subscriptions with option ExpandStopData=TRUE if the journey pattern point is a stop point. Alternatively, stop point information can be obtained by joining view StopPoint and JourneyPatternPoint in DOI.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="TimetabledJourneyPatternPointRef" type="PT:JourneyPatternPointRef" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>If this element is omitted then the timetabled journey pattern point is the same as the target journey pattern point. If there has been a change of stop point, this element will be provided as a reference to the original stop point.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="TimetabledStopPoint" type="ROI:StopPoint" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Expanded data provided for subscriptions with option ExpandStopData=TRUE if the timetabled journey pattern point is different from the target journey pattern point and it is a stop point. Alternatively, stop point information can be obtained by joining view StopPoint and JourneyPatternPoint in DOI.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:group>
+	<!-- -->
+	<xs:complexType name="ScopeElements">
+		<xs:sequence>
+			<xs:element name="ScopeElement" type="ROI:ScopeElement" maxOccurs="unbounded"/>
+		</xs:sequence>
+	</xs:complexType>
+	<!-- -->
+	<xs:group name="DeviationScope">
+		<xs:sequence>
+			<xs:element name="ScopeElements" type="ROI:ScopeElements"/>
+		</xs:sequence>
+	</xs:group>
+	<!-- -->
+	<xs:complexType name="TimeScope">
+		<xs:attribute name="FromDateTime" type="PT:LocalDateTime" use="required"/>
+		<xs:attribute name="UptoDateTime" type="PT:LocalDateTime" use="required"/>
+	</xs:complexType>
+	<!-- -->
+	<xs:complexType name="ScopeElement">
+		<xs:sequence>
+			<xs:group ref="ROI:JourneyScope" minOccurs="0"/>
+			<xs:group ref="ROI:StopScope" minOccurs="0"/>
+			<xs:element name="TimeScope" type="ROI:TimeScope"/>
+		</xs:sequence>
+		<xs:attribute name="Id" type="PT:Id" use="required"/>
+		<xs:attribute name="VisitCountNumber" type="PT:VisitCount" use="optional" default="1"/>
+		<xs:attribute name="ConcernsArrivals" type="PT:YesNo" use="optional" default="Y"/>
+		<xs:attribute name="ConcernsDepartures" type="PT:YesNo" use="optional" default="Y"/>
+	</xs:complexType>
+	<!-- -->
+	<xs:group name="StopScope">
+		<xs:annotation>
+			<xs:documentation>If omitted then there is no restriction on stop scope, except if either arrivals or departures are excluded generally as indicated by ConcernsArrivals='N' or ConcernsDepartures='N'.</xs:documentation>
+		</xs:annotation>
+		<xs:choice>
+			<xs:element name="StopTransportAuthorityRef" type="PT:TransportAuthorityRef"/>
+			<xs:element name="StopAreaRef" type="PT:StopAreaRef"/>
+			<xs:element name="JourneyPatternPointRef" type="PT:JourneyPatternPointRef"/>
+		</xs:choice>
+	</xs:group>
+	<!-- -->
+	<xs:group name="JourneyScope">
+		<xs:choice>
+			<xs:element name="JourneyTransportAuthorityRef" type="PT:TransportAuthorityRef"/>
+			<xs:element name="LineRef" type="PT:LineRef"/>
+			<xs:element name="DirectionOfLineRef" type="PT:DirectionOfLineRef"/>
+			<xs:element name="VehicleJourneyRef" type="PT:VehicleJourneyRef"/>
+		</xs:choice>
+	</xs:group>
+	<!-- -->
+	<xs:group name="JourneyWithinLineScope">
+		<xs:choice>
+			<xs:element name="DirectionOfLineRef" type="PT:DirectionOfLineRef"/>
+			<xs:element name="DatedVehicleJourneyRef" type="ROI:DatedVehicleJourneyRef"/>
+		</xs:choice>
+	</xs:group>
+	<!-- -->
+	<xs:complexType name="BlockAssignment">
+		<xs:complexContent>
+			<xs:extension base="ROI:OriginalInstance">
+				<xs:sequence>
+					<xs:element name="BlockRef" type="PT:BlockRef"/>
+					<xs:element name="AssignedVehicleRef" type="PT:VehicleRef"/>
+				</xs:sequence>
+				<xs:attribute name="State" type="ROI:AssignmentState" use="required"/>
+				<xs:attribute name="OperatingDayDate" type="xs:date" use="required"/>
+				<xs:attribute name="ValidFromDateTime" type="PT:LocalDateTime" use="required"/>
+				<xs:attribute name="InvalidFromDateTime" type="PT:LocalDateTime" use="optional"/>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<!-- -->
+	<xs:complexType name="VehicleJourneyAssignment">
+		<xs:complexContent>
+			<xs:extension base="ROI:OriginalInstance">
+				<xs:sequence>
+					<xs:element name="DatedVehicleJourneyRef" type="ROI:LaxDatedVehicleJourneyRef"/>
+					<xs:element name="AssignedVehicleRef" type="PT:VehicleRef"/>
+				</xs:sequence>
+				<xs:attribute name="State" type="ROI:AssignmentState" use="required"/>
+				<xs:attribute name="TrainSizeCarCount" type="PT:Count" use="optional"/>
+				<xs:attribute name="ValidFromDateTime" type="PT:LocalDateTime" use="required"/>
+				<xs:attribute name="InvalidFromDateTime" type="PT:LocalDateTime" use="optional"/>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<!-- -->
+	<xs:complexType name="DriverAssignment">
+		<xs:complexContent>
+			<xs:extension base="ROI:OriginalInstance">
+				<xs:sequence>
+					<xs:element name="EmployeeRef" type="PT:EmployeeRef"/>
+					<xs:element name="AssignedVehicleRef" type="PT:VehicleRef"/>
+				</xs:sequence>
+				<xs:attribute name="State" type="ROI:AssignmentState" use="required"/>
+				<xs:attribute name="OperatingDayDate" type="xs:date" use="required"/>
+				<xs:attribute name="ValidFromDateTime" type="PT:LocalDateTime" use="required"/>
+				<xs:attribute name="InvalidFromDateTime" type="PT:LocalDateTime" use="optional"/>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<!-- -->
+	<xs:complexType name="DutyAssignment">
+		<xs:complexContent>
+			<xs:extension base="ROI:OriginalInstance">
+				<xs:sequence>
+					<xs:element name="DutyRef" type="PT:DutyRef"/>
+					<xs:element name="AssignedEmployeeRef" type="PT:EmployeeRef"/>
+				</xs:sequence>
+				<xs:attribute name="State" type="ROI:AssignmentState" use="required"/>
+				<xs:attribute name="OperatingDayDate" type="xs:date" use="required"/>
+				<xs:attribute name="ValidFromDateTime" type="PT:LocalDateTime" use="required"/>
+				<xs:attribute name="InvalidFromDateTime" type="PT:LocalDateTime" use="optional"/>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<!-- -->
+	<xs:group name="Assignment">
+		<xs:choice>
+			<xs:element name="BlockAssignment" type="ROI:BlockAssignment"/>
+			<xs:element name="VehicleJourneyAssignment" type="ROI:VehicleJourneyAssignment"/>
+			<xs:element name="DutyAssignment" type="ROI:DutyAssignment"/>
+			<xs:element name="DriverAssignment" type="ROI:DriverAssignment"/>
+		</xs:choice>
+	</xs:group>
+	<!-- -->
+	<xs:complexType name="DestinationDisplay">
+		<xs:sequence>
+			<xs:element name="PrimaryPlaceRef" type="PT:PlaceRef" minOccurs="0"/>
+			<xs:element name="SecondaryPlaceRef" type="PT:PlaceRef" minOccurs="0"/>
+		</xs:sequence>
+		<xs:attribute name="Id" type="PT:Id" use="required"/>
+		<xs:attribute name="LineDesignation" type="PT:LineDesignation" use="required"/>
+		<xs:attribute name="PrimaryDestinationName" type="PT:Name" use="required"/>
+		<xs:attribute name="PrimaryDestinationShortName" type="PT:ShortName" use="optional"/>
+		<xs:attribute name="SecondaryDestinationName" type="PT:Name" use="optional"/>
+		<xs:attribute name="SecondaryDestinationShortName" type="PT:ShortName" use="optional"/>
+		<xs:attribute name="SecondaryDestinationType" type="PT:SecondaryDestinationType" use="optional"/>
+		<xs:attribute name="ProductName" type="PT:Name" use="optional"/>
+		<xs:attribute name="SymbolName" type="PT:Name" use="optional"/>
+	</xs:complexType>
+	<!-- -->
+	<xs:group name="Destination">
+		<xs:annotation>
+			<xs:documentation>Only omitted for dead runs without destination display information.</xs:documentation>
+		</xs:annotation>
+		<xs:choice>
+			<xs:annotation>
+				<xs:documentation>Normally the DestinationDisplayRef is provided. For some types of extra dated journeys where destination display data is not available, the name of the last stop should instead be used as destination text. </xs:documentation>
+			</xs:annotation>
+			<xs:sequence>
+				<xs:element name="DestinationDisplayRef" type="ROI:DestinationDisplayRef">
+					<xs:annotation>
+						<xs:documentation>Reference to row in view DestinationDisplay of DOI</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="DestinationDisplay" type="ROI:DestinationDisplay" minOccurs="0">
+					<xs:annotation>
+						<xs:documentation>Expanded data provided for subscriptions with option ExpandDestinationData=TRUE. Alternatively available by joining with view DestinationDisplay in DOI. </xs:documentation>
+					</xs:annotation>
+				</xs:element>
+			</xs:sequence>
+			<xs:sequence>
+				<xs:element name="DestinationStopAreaRef" type="PT:StopAreaRef">
+					<xs:annotation>
+						<xs:documentation>Reference to the end stop area of the vehicle journey. </xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="StopArea" type="ROI:StopArea" minOccurs="0">
+					<xs:annotation>
+						<xs:documentation>Expanded data provided for subscriptions with option ExpandStopData=TRUE Alternatively, stop area information can be obtained from DOI.</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+			</xs:sequence>
+		</xs:choice>
+	</xs:group>
+	<!-- -->
+	<xs:group name="ChangedDestination">
+		<xs:annotation>
+			<xs:documentation>If the vehicle journey's last stop is cancelled, then the name of the last stop should be used as destination text. </xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="DestinationStopAreaRef" type="PT:StopAreaRef">
+				<xs:annotation>
+					<xs:documentation>Reference to the end stop area of the vehicle journey. </xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="StopArea" type="ROI:StopArea" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Expanded data provided for subscriptions with option ExpandStopData=TRUE Alternatively, stop area information can be obtained from DOI.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:group>
+	<!-- -->
+	<xs:complexType name="StopArea">
+		<xs:attribute name="Gid" type="PT:StopAreaGid" use="required"/>
+		<xs:attribute name="Name" type="PT:Name" use="required"/>
+		<xs:attribute name="ShortName" type="PT:ShortName" use="optional"/>
+	</xs:complexType>
+	<!-- -->
+	<xs:complexType name="StopPoint">
+		<xs:sequence>
+			<xs:element name="StopArea" type="ROI:StopArea"/>
+		</xs:sequence>
+		<xs:attribute name="Gid" type="PT:StopPointGid" use="required"/>
+		<xs:attribute name="Name" type="PT:Name" use="required"/>
+		<xs:attribute name="ShortName" type="PT:ShortName" use="optional"/>
+		<xs:attribute name="Designation" type="PT:StopPointDesignation" use="optional"/>
+		<xs:attribute name="Type" type="PT:StopPointType" use="required"/>
+	</xs:complexType>
+	<!-- -->
+	<xs:complexType name="Line">
+		<xs:sequence>
+			<xs:element name="TransportAuthority" type="ROI:TransportAuthority"/>
+		</xs:sequence>
+		<xs:attribute name="Gid" type="PT:LineGid" use="required"/>
+		<xs:attribute name="Designation" type="PT:LineDesignation" use="optional"/>
+		<xs:attribute name="Name" type="PT:Name" use="optional"/>
+		<xs:attribute name="ProductCode" type="PT:Code" use="optional"/>
+		<xs:attribute name="ProductName" type="PT:Name" use="optional"/>
+	</xs:complexType>
+	<!-- -->
+	<xs:complexType name="VehicleOperator">
+		<xs:attribute name="Gid" type="PT:ContractorGid" use="required"/>
+		<xs:attribute name="Code" type="PT:Code" use="required"/>
+		<xs:attribute name="Name" type="PT:Name" use="required"/>
+	</xs:complexType>
+	<!-- -->
+	<xs:complexType name="TransportAuthority">
+		<xs:attribute name="Gid" type="PT:TransportAuthorityGid" use="required"/>
+		<xs:attribute name="Code" type="PT:Code" use="required"/>
+		<xs:attribute name="Name" type="PT:Name" use="required"/>
+	</xs:complexType>
+	<!-- -->
+	<xs:complexType name="DeviationCaseRef">
+		<xs:attribute name="Id" type="PT:Id" use="required"/>
+		<xs:attribute name="Gid" type="PT:DeviationCaseGid" use="required"/>
+	</xs:complexType>
+	<!-- -->
+	<xs:complexType name="DeviationMessageVersionRef">
+		<xs:attribute name="Id" type="PT:Id" use="required"/>
+	</xs:complexType>
+	<!-- -->
+	<xs:group name="NetworkObjectRef">
+		<xs:choice>
+			<xs:element name="StopPointRef" type="PT:StopPointRef"/>
+			<xs:element name="BridgingDeviceRef" type="PT:BridgingDeviceRef"/>
+			<xs:element name="StationEntrancePointRef" type="PT:StationEntrancePointRef"/>
+		</xs:choice>
+	</xs:group>
+	<!-- -->
+	<xs:complexType name="VehicleOperatorRef">
+		<xs:attribute name="Gid" type="PT:ContractorGid" use="required"/>
+	</xs:complexType>
+	<!-- -->
+	<xs:complexType name="OrganisationalUnitRef">
+		<xs:attribute name="Id" type="PT:Id" use="required"/>
+	</xs:complexType>
+	<!-- -->
+	<xs:complexType name="DestinationDisplayRef">
+		<xs:attribute name="Id" type="PT:Id" use="required"/>
+	</xs:complexType>
+	<!-- -->
+	<xs:complexType name="DepartureRef">
+		<xs:attribute name="Id" type="PT:Id" use="required">
+			<xs:annotation>
+				<xs:documentation>This is the Instance Id of the referred Departure.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+	</xs:complexType>
+	<!-- -->
+	<xs:complexType name="ArrivalRef">
+		<xs:attribute name="Id" type="PT:Id" use="required">
+			<xs:annotation>
+				<xs:documentation>This is the Instance Id of the referred Arrival.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+	</xs:complexType>
+	<!-- -->
+	<xs:complexType name="ConnectionRef">
+		<xs:attribute name="Id" type="PT:Id" use="required"/>
+	</xs:complexType>
+	<!-- -->
+	<xs:complexType name="DatedVehicleJourneyRef">
+		<xs:attribute name="Id" type="PT:Id" use="required"/>
+		<xs:attribute name="OperatingDayDate" type="xs:date" use="required"/>
+		<xs:attribute name="Gid" type="PT:VehicleJourneyGid" use="required"/>
+	</xs:complexType>
+	<!-- -->
+	<xs:complexType name="LaxDatedVehicleJourneyRef">
+		<xs:attribute name="Id" type="PT:Id" use="optional">
+			<xs:annotation>
+				<xs:documentation>Omitted only if assigned vehicle journey does not exist in production plan.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="OperatingDayDate" type="xs:date" use="required"/>
+		<xs:attribute name="Gid" type="PT:VehicleJourneyGid" use="required"/>
+	</xs:complexType>
+	<!-- -->
+	<xs:complexType name="MonitoredVehicleJourneyRef">
+		<xs:attribute name="Id" type="PT:Id" use="required"/>
+	</xs:complexType>
+	<!-- -->
+	<xs:complexType name="ServiceRequirementRef">
+		<xs:attribute name="Id" type="PT:Id" use="required"/>
+	</xs:complexType>
+	<!-- -->
+	<xs:complexType name="PublicationScopeRef">
+		<xs:attribute name="Id" type="PT:Id" use="required"/>
+	</xs:complexType>
+	<!-- -->
+	<xs:complexType name="Instance" abstract="true">
+		<xs:attribute name="Id" type="PT:Id" use="required"/>
+		<xs:attribute name="Timestamp" type="xs:dateTime" use="required">
+			<xs:annotation>
+				<xs:documentation>Time of last modification in PubTrans.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+	</xs:complexType>
+	<!--  -->
+	<xs:complexType name="OriginalInstance" abstract="true">
+		<xs:attribute name="Id" type="PT:Id" use="required"/>
+		<xs:attribute name="Timestamp" type="xs:dateTime" use="required">
+			<xs:annotation>
+				<xs:documentation>Time of last modification in PubTrans.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="CreatedTimestamp" type="xs:dateTime" use="optional">
+			<xs:annotation>
+				<xs:documentation>Time when originally created in PubTrans. Only provided if different from Timestamp.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+	</xs:complexType>
+	<!--  -->
+	<xs:simpleType name="FromDocumentLayoutVersion">
+		<xs:annotation>
+			<xs:documentation>The set of values in the enumeration indicates the range of schema versions that this schema version is backward compatible with. Used to ensure that the schema version that an incoming document was validated against is not in conflict with this schema version.</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:token">
+			<xs:enumeration value="3.0.8"/>
+			<xs:enumeration value="3.0.9"/>
+		</xs:restriction>
+	</xs:simpleType>
+</xs:schema>

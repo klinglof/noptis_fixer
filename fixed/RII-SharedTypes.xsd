@@ -1,0 +1,224 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:PT="http://www.pubtrans.com/PT/1.0" xmlns:RII="http://www.pubtrans.com/RII/2.0" targetNamespace="http://www.pubtrans.com/RII/2.0" elementFormDefault="unqualified" attributeFormDefault="unqualified" version="2.0.8">
+	<xs:annotation>
+		<xs:documentation>
+		This document is a property of NOPTIS. The definition of the interface specification defined in this document is a property of NOPTIS.
+		
+		Copyright © NOPTIS 2006.
+		Final and approved versions of the document may be reproduced or used for the purpose of integrating systems according to the NOPTIS standard.
+		By using this document and the solutions designed herein, the user confirms that the material is not being used in a derogatory manner or in a misleading context.
+		The source of the material must be acknowledged and the title of the content must be included when being reproduced as part of another publication or service.
+				 
+		In order to avoid uncertainties for possible users of the standardised interface NOPTIS it is noted that Hogia Public Transport Systems AB,
+		as the owner of the registered trademark PUBTRANS, gives any user of the NOPTIS interface the right to use the names ToPubTrans, FromPubTrans,
+		ToPubTransMessages, FromPubTransMessages and www.pubtrans.com when – and to the extent - this is required to enable the user to technically interact through the NOPTIS interface.
+		The right of use is limited to the aforesaid and is applicable regardless of whether or not the interaction involves a Hogia product or not.
+
+		Version 2.0.0 -
+		Version 2.0.1 
+		- ATTENTION added in Status enumration
+		- Additional DeviationReasonCategory enumerations added
+		- Changes in cancellation reasons.
+		Version 2.0.2
+		- Intermediate release
+		Version 2.0.3
+		- SimpleType VehicleJourneyGidOrId added.
+		- ExtraJourneyReason is a restriction of xs:token, not xs:string.
+		- Priority is a restriction of xs:unsignedShort allowing values in the range 1-9.
+		- Name of User attribute Initials changed to Name.
+		- User attribute Name is optional.
+		Version 2.0.4
+		-Optional attribute OrganisationCode added to User
+		Version 2.0.5
+		-New namespace
+		Version 2.0.6
+		-Simple type Content added
+		-Simple type HyperLinkName added
+		-Attributes CaseID and SystemID is of type PT:Name
+		Version 2.0.7
+		-New enumarations added in DeviationReasonCategory
+		Version 2.0.8
+		- Added type VehicleOperatorGidOrDepartmentId (accept Organisational Unit Id as Vehicle Operator Ref). 
+		</xs:documentation>
+	</xs:annotation>
+	<xs:import namespace="http://www.pubtrans.com/PT/1.0" schemaLocation="PTShared/PT-SharedTypes.xsd"/>
+	<!--  *********************************************************  -->
+	<xs:complexType name="DeviationMessageVersionRef">
+		<xs:sequence>
+			<xs:element name="CaseRef" type="RII:CaseRef"/>
+		</xs:sequence>
+		<xs:attribute name="VersionNumber" type="xs:positiveInteger" use="required"/>
+	</xs:complexType>
+	<xs:complexType name="User">
+		<xs:attribute name="Name" type="PT:Name" use="optional"/>
+		<xs:attribute name="OrganisationalUnitCode" type="xs:string" use="required"/>
+		<xs:attribute name="OrganisationCode" use="optional">
+			<xs:annotation>
+				<xs:documentation>This attribute can be omitted in systems where OrganisationalUnitCode is unique across all organisations.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+	</xs:complexType>
+	<!--  -->
+	<xs:complexType name="CaseRef">
+		<xs:choice>
+			<xs:element name="DeviationCaseRef" type="PT:DeviationCaseRef"/>
+			<xs:element name="ExternalCaseRef" type="RII:ExternalCaseRef"/>
+		</xs:choice>
+	</xs:complexType>
+	<!--  -->
+	<xs:complexType name="ExternalCaseRef">
+		<xs:attribute name="CaseID" type="PT:Name" use="required">
+			<xs:annotation>
+				<xs:documentation>This is a unique case identification in scope of a certain external source system.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="SystemID" type="PT:Name" use="required">
+			<xs:annotation>
+				<xs:documentation>This is the agreed identification of the external source system.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+	</xs:complexType>
+	<!--  -->
+	<xs:simpleType name="VehicleJourneyGidOrId">
+		<xs:annotation>
+			<xs:documentation>It is permitted to use the VehicleJourneyGid or the DOI Id of the VehicleJourney.</xs:documentation>
+		</xs:annotation>
+		<xs:union memberTypes="PT:VehicleJourneyGid PT:Id"/>
+	</xs:simpleType>
+	<!--  -->
+	<xs:simpleType name="VehicleOperatorGidOrDepartmentId">
+		<xs:annotation>
+			<xs:documentation>It is permitted to use the Organisational Unit Id for a department responsible for journeys that should be affected.</xs:documentation>
+		</xs:annotation>
+		<xs:union memberTypes="PT:ContractorGid PT:Id"/>
+	</xs:simpleType>
+	<!--  -->
+	<xs:simpleType name="ProgressState">
+		<xs:restriction base="xs:token">
+			<xs:enumeration value="FASTPROGRESS"/>
+			<xs:enumeration value="NORMALPROGRESS"/>
+			<xs:enumeration value="SLOWPROGRESS"/>
+			<xs:enumeration value="NOPROGRESS"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<!--  -->
+	<xs:simpleType name="ContentType">
+		<xs:restriction base="xs:token">
+			<xs:enumeration value="text/plain"/>
+			<xs:enumeration value="urn/mp3"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<!--  -->
+	<xs:simpleType name="ChangeModel">
+		<xs:restriction base="xs:token">
+			<xs:enumeration value="MINIMAL"/>
+			<xs:enumeration value="LINEAR"/>
+			<xs:enumeration value="STATISTIC"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<!--  -->
+	<xs:simpleType name="Status">
+		<xs:restriction base="xs:token">
+			<xs:enumeration value="LIMITEDACCESS"/>
+			<xs:enumeration value="CLOSED"/>
+			<xs:enumeration value="ATTENTION"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<!--  -->
+	<xs:simpleType name="PriorityLevel">
+		<xs:annotation>
+			<xs:documentation>Priority is a value in the range 1 - 9. The value 1 represents the highest priority. </xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:nonNegativeInteger">
+			<xs:minInclusive value="1"/>
+			<xs:maxInclusive value="9"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<!--  -->
+	<xs:simpleType name="ConnectionCancellationReason">
+		<xs:restriction base="xs:token">
+			<xs:enumeration value="FeederNotSignedOn"/>
+			<xs:enumeration value="FeederCancelled"/>
+			<xs:enumeration value="FeederDiverted"/>
+			<xs:enumeration value="FeederEmpty"/>
+			<xs:enumeration value="FeederExcessivelyDelayed"/>
+			<xs:enumeration value="FetcherCancelled"/>
+			<xs:enumeration value="FetcherDiverted"/>
+			<xs:enumeration value="FetcherEarlyDeparture"/>
+			<xs:enumeration value="FetcherFull"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<!--  -->
+	<xs:simpleType name="ConnectionModificationReason">
+		<xs:restriction base="xs:token">
+			<xs:enumeration value="FeederExcessivlyDelayed"/>
+			<xs:enumeration value="FetcherNotSignedOn"/>
+			<xs:enumeration value="FetcherCancelled"/>
+			<xs:enumeration value="FetcherDiverted"/>
+			<xs:enumeration value="FetcherEarlyDeparture"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<!--  -->
+	<xs:simpleType name="ConnectionCreationReason">
+		<xs:restriction base="xs:token">
+			<xs:enumeration value="NormalFetcherFull"/>
+			<xs:enumeration value="PassengerRequest"/>
+			<xs:enumeration value="NormalFetcherMissing"/>
+			<xs:enumeration value="ExtraJourney"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<!--  -->
+	<xs:simpleType name="Content">
+		<xs:restriction base="xs:string">
+			<xs:minLength value="1"/>
+			<xs:maxLength value="3600"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<!--  -->
+	<xs:simpleType name="HyperLinkName">
+		<xs:restriction base="xs:string">
+			<xs:minLength value="1"/>
+			<xs:maxLength value="1024"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<!--  -->
+	<xs:simpleType name="ExtraJourneyReason">
+		<xs:restriction base="xs:token">
+			<xs:enumeration value="NormalJourneyFull"/>
+			<xs:enumeration value="Replacement"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<!--  -->
+	<xs:simpleType name="DeviationReasonCategory">
+		<xs:restriction base="xs:token">
+			<xs:enumeration value="ACCIDENT"/>
+			<xs:enumeration value="ASSAULT"/>
+			<xs:enumeration value="VANDALISM"/>
+			<xs:enumeration value="NODRIVER"/>
+			<xs:enumeration value="STRIKE"/>
+			<xs:enumeration value="VEHICLESHORTAGE"/>
+			<xs:enumeration value="TECHNICALFAILURE"/>
+			<xs:enumeration value="VEHICLEBREAKDOWN"/>
+			<xs:enumeration value="INFRASTRUCTUREFAILURE"/>
+			<xs:enumeration value="DELAYS"/>
+			<xs:enumeration value="REDUCEDSPEED"/>
+			<xs:enumeration value="WEATHER"/>
+			<xs:enumeration value="CONGESTION"/>
+			<xs:enumeration value="ROADWORK"/>
+			<xs:enumeration value="CHANGEDROUTE"/>
+			<xs:enumeration value="OTHER"/>
+			<xs:enumeration value="TRAFFICINCIDENT"/>
+			<xs:enumeration value="EARLYDEPARTURE"/>
+			<xs:enumeration value="WRONGROUTE"/>
+			<xs:enumeration value="POLICEDECISION"/>
+			<xs:enumeration value="SAFETY"/>
+			<xs:enumeration value="SMOKE"/>
+			<xs:enumeration value="MEDICAL"/>
+			<xs:enumeration value="HEAVYLOAD"/>
+			<xs:enumeration value="RESTOREOPERATION"/>
+			<xs:enumeration value="MAINTENANCE"/>
+			<xs:enumeration value="SERVICEINFO"/>
+			<xs:enumeration value="MARKETINGINFO"/>
+		</xs:restriction>
+	</xs:simpleType>
+</xs:schema>

@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:PT="http://www.pubtrans.com/PT/1.0" xmlns:XMLStream="http://www.pubtrans.com/XMLStream/1.0" xmlns:xs="http://www.w3.org/2001/XMLSchema" targetNamespace="http://www.pubtrans.com/PT/1.0" elementFormDefault="qualified" attributeFormDefault="unqualified" version="1.0.4">
+	<xs:annotation>
+		<xs:documentation>
+		This xsd contains the adaptions necessary to transport messages using the XML-Stream transport mechanism. 
+		
+		This document is a property of NOPTIS. The definition of the interface specification defined in this document is a property of NOPTIS.
+		
+		Copyright © NOPTIS 2006.
+		Final and approved versions of the document may be reproduced or used for the purpose of integrating systems according to the NOPTIS standard.
+		By using this document and the solutions designed herein, the user confirms that the material is not being used in a derogatory manner or in a misleading context.
+		The source of the material must be acknowledged and the title of the content must be included when being reproduced as part of another publication or service.
+				 
+		In order to avoid uncertainties for possible users of the standardised interface NOPTIS it is noted that Hogia Public Transport Systems AB,
+		as the owner of the registered trademark PUBTRANS, gives any user of the NOPTIS interface the right to use the names ToPubTrans, FromPubTrans,
+		ToPubTransMessages, FromPubTransMessages and www.pubtrans.com when – and to the extent - this is required to enable the user to technically interact through the NOPTIS interface.
+		The right of use is limited to the aforesaid and is applicable regardless of whether or not the interaction involves a Hogia product or not.
+
+		Version history
+		Version 1.0.1 
+		- Initial version
+		Version 1.0.2 
+		- Message and MessageId added
+		Version 1.0.3 
+		- New target namespace
+		Version 1.0.4
+		-SystemMessages added
+		</xs:documentation>
+	</xs:annotation>
+	<!--======================================================================================== -->
+	<!-- Adaptions to specific transport mechanism-->
+	<!-- -->
+	<!-- The sum of this schema and it´s included schema files should at least provide the extendable complexTypes-->
+	<!-- Messages, Request, Response, Report, ErrorReport and ErrorResponse-->
+	<!--======================================================================================== -->
+	<!-- Start of Adaptions to XML streaming -->
+	<!-- _________________________________________________________________________________________ -->
+	<xs:import namespace="http://www.pubtrans.com/XMLStream/1.0" schemaLocation="XMLStream.xsd"/>
+	<!-- -->
+	<xs:complexType name="Messages">
+		<xs:complexContent>
+			<xs:extension base="XMLStream:MessageBatch"/>
+		</xs:complexContent>
+	</xs:complexType>
+	<!-- -->
+	<xs:complexType name="Message">
+		<xs:complexContent>
+			<xs:extension base="XMLStream:Message"/>
+		</xs:complexContent>
+	</xs:complexType>
+	<!-- -->
+	<xs:complexType name="Report">
+		<xs:complexContent>
+			<xs:extension base="XMLStream:Message"/>
+		</xs:complexContent>
+	</xs:complexType>
+	<!-- -->
+	<xs:complexType name="Response">
+		<xs:complexContent>
+			<xs:extension base="XMLStream:Response"/>
+		</xs:complexContent>
+	</xs:complexType>
+	<!-- -->
+	<xs:complexType name="Request">
+		<xs:complexContent>
+			<xs:extension base="XMLStream:Request"/>
+		</xs:complexContent>
+	</xs:complexType>
+	<!-- -->
+	<xs:complexType name="ErrorReport">
+		<xs:complexContent>
+			<xs:extension base="XMLStream:ErrorMessage"/>
+		</xs:complexContent>
+	</xs:complexType>
+	<!-- -->
+	<xs:complexType name="ErrorResponse">
+		<xs:complexContent>
+			<xs:extension base="XMLStream:ErrorResponse"/>
+		</xs:complexContent>
+	</xs:complexType>
+	<!-- -->
+	<xs:group name="SystemMessages">
+		<xs:choice>
+			<xs:group ref="XMLStream:SystemMessages"/>
+		</xs:choice>
+	</xs:group>
+	<!--  *********************************************************  -->
+	<xs:simpleType name="MessageId">
+		<xs:restriction base="XMLStream:MessageId"/>
+	</xs:simpleType>
+	<!--  *********************************************************  -->
+	<!-- _________________________________________________________________________________________ -->
+	<!-- End of Adaptions to XML streaming -->
+	<!--======================================================================================== -->
+</xs:schema>

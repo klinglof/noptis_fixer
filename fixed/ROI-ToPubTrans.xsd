@@ -1,0 +1,271 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:ROI="http://www.pubtrans.com/ROI/3.0" xmlns:PT="http://www.pubtrans.com/PT/1.0" xmlns:xs="http://www.w3.org/2001/XMLSchema" targetNamespace="http://www.pubtrans.com/ROI/3.0" elementFormDefault="unqualified" attributeFormDefault="unqualified" version="3.0.7">
+	<xs:annotation>
+		<xs:documentation> 
+		This document is a property of the organisation Nordic Public Transport Interface Standard (NOPTIS).
+        The definition of the interface specification defined in this document is a property of NOPTIS.
+
+		Copyright © NOPTIS 2006.
+		By using this document and the solutions designed herein, the user confirms that the material is not being used in a derogatory manner or in a misleading context. 
+		The source of the material must be acknowledged and the title of the content must be included when being re-produced as part of another publication or service.
+
+		Version 3.0.0 - Baseline version
+		Version 3.0.1 
+		- Deviation case event subscription options added: IncludeSourceControlActions and DeviationMessageVersionEventsOnly.
+		Version 3.0.2
+		- Correction of Gid type in SubscriptionRequest					
+		Version 3.0.3
+		- New Target namespace
+		-Attribute IsRestrictedToFinalState" in complexType ScopeElement removed.
+		Version 3.0.4		
+		-DeviationCaseEventSelection restructured
+		Obselete complexType SynchronisationResponse removed
+		Version 3.0.5
+		-Restructured schema. No actual change for users of schema.
+		-Annotation for SubscriptionResumeRequest changed.
+		-IsRestrictedToFinalState attribute removed from ScopeElement.
+		-Renamed ExpandServiceRequirement to ExpandServiceRequirementData for conformity.
+		-Added subscription options ExpandLineData and ExpandVehicleOperatorData.
+		Version 3.0.6
+		-Attribute SubscriptionId optional in SubscriptionResumeRequest
+		-Annotation changed in complexType SubscriptionTerminationRequest
+		Version 3.0.7
+		-SubscriptionUpdateRequest added.
+		-DocumentLayOutVersion type renamed as ToDocumentLayOutVersion.
+		</xs:documentation>
+	</xs:annotation>
+	<xs:include schemaLocation="ROI-SharedTypes.xsd"/>
+	<xs:import namespace="http://www.pubtrans.com/PT/1.0" schemaLocation="PTShared/PT-SharedTypes.xsd"/>
+	<!--== Uses XMLStream based trasport mechanism == -->
+	
+	<!--======================================================================================== -->
+	<xs:element name="ToPubTransMessages" type="ROI:ToPubTransMessages"/>
+	<!--======================================================================================== -->
+	<xs:complexType name="ToPubTransMessages">
+		<xs:complexContent>
+			<xs:extension base="PT:Messages">
+				<xs:choice maxOccurs="unbounded">
+					<xs:group ref="PT:SystemMessages"/>
+					<xs:group ref="ROI:SubscriptionMessages"/>
+				</xs:choice>
+				<xs:attribute name="DocumentLayoutVersion" type="ROI:ToDocumentLayoutVersion" use="required"/>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<!--     -->
+	<xs:group name="SubscriptionMessages">
+		<xs:choice>
+			<xs:element name="SubscriptionRequest" type="ROI:SubscriptionSetupRequest">
+				<xs:annotation>
+					<xs:documentation>This request sets up and starts the subscription.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="SubscriptionUpdateRequest" type="ROI:SubscriptionUpdateRequest">
+				<xs:annotation>
+					<xs:documentation>This request modifies an existing subscription.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="SubscriptionResumeRequest" type="ROI:SubscriptionResumeRequest">
+				<xs:annotation>
+					<xs:documentation>This request should be sent after reestabling a broken connection to resume the flow of subscribed data.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="SubscriptionTerminationRequest" type="ROI:SubscriptionTerminationRequest">
+				<xs:annotation>
+					<xs:documentation>This request terminates the subscription.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:choice>
+	</xs:group>
+	<!--     -->
+	<xs:complexType name="ScopeElement">
+		<xs:sequence>
+			<xs:group ref="ROI:JourneyScope" minOccurs="0"/>
+			<xs:group ref="ROI:StopScope" minOccurs="0"/>
+		</xs:sequence>
+		<xs:attribute name="ConcernsArrivals" type="PT:YesNo" use="optional" default="Y"/>
+		<xs:attribute name="ConcernsDepartures" type="PT:YesNo" use="optional" default="Y"/>
+	</xs:complexType>
+	<!--     -->
+	<xs:complexType name="JourneyScopeElement">
+		<xs:sequence>
+			<xs:group ref="ROI:JourneyScope" minOccurs="0"/>
+		</xs:sequence>
+	</xs:complexType>
+	<!--     -->
+	<xs:complexType name="PublicationScopeElement">
+		<xs:sequence>
+			<xs:group ref="ROI:PublicationScope" minOccurs="0"/>
+		</xs:sequence>
+	</xs:complexType>
+	<!--     -->
+	<xs:group name="StopScope">
+		<xs:annotation>
+			<xs:documentation>If omitted then all stops are of interest.</xs:documentation>
+		</xs:annotation>
+		<xs:choice>
+			<xs:element name="StopTransportAuthorityRef" type="PT:TransportAuthorityRef"/>
+			<xs:element name="StopAreaRef" type="PT:StopAreaRef"/>
+			<xs:element name="JourneyPatternPointRef" type="PT:JourneyPatternPointRef"/>
+		</xs:choice>
+	</xs:group>
+	<!--     -->
+	<xs:group name="JourneyScope">
+		<xs:annotation>
+			<xs:documentation>If omitted then all journeys are of interest.</xs:documentation>
+		</xs:annotation>
+		<xs:choice>
+			<xs:element name="JourneyTransportAuthorityRef" type="PT:TransportAuthorityRef"/>
+			<xs:element name="LineRef" type="PT:LineRef"/>
+			<xs:element name="DirectionOfLineRef" type="PT:DirectionOfLineRef"/>
+		</xs:choice>
+	</xs:group>
+	<!--     -->
+	<xs:group name="PublicationScope">
+		<xs:annotation>
+			<xs:documentation>If omitted then all publication scopes are of interest.</xs:documentation>
+		</xs:annotation>
+		<xs:choice>
+			<xs:element name="JourneyTransportAuthorityRef" type="PT:TransportAuthorityRef"/>
+			<xs:element name="LineRef" type="PT:LineRef"/>
+		</xs:choice>
+	</xs:group>
+	<!--     -->
+	<xs:complexType name="ScopeElements">
+		<xs:sequence>
+			<xs:element name="ScopeElement" type="ROI:ScopeElement" maxOccurs="unbounded"/>
+		</xs:sequence>
+	</xs:complexType>
+	<!--     -->
+	<xs:complexType name="PublicationScopeElements">
+		<xs:sequence>
+			<xs:element name="PublicationScopeElement" type="ROI:PublicationScopeElement" maxOccurs="unbounded"/>
+		</xs:sequence>
+	</xs:complexType>
+	<!--     -->
+	<xs:complexType name="VehicleJourneyEventSelection">
+		<xs:sequence>
+			<xs:element name="ScopeElements" type="ROI:ScopeElements"/>
+		</xs:sequence>
+		<xs:attribute name="LookAheadDuration" type="xs:duration" use="required">
+			<xs:annotation>
+				<xs:documentation>Defines how far in advance, using a rolling time frame, that production plan data should be provided. A point in time can be constructed by adding the look-ahead duration to the current time. Data that is not yet valid at that point in time should be excluded.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="ExpandStopData" type="PT:YesNo" use="optional" default="N"/>
+		<xs:attribute name="ExpandDestinationData" type="PT:YesNo" use="optional" default="N"/>
+		<xs:attribute name="ExpandVehicleData" type="PT:YesNo" use="optional" default="N"/>
+		<xs:attribute name="ExpandLineData" type="PT:YesNo" use="optional" default="N"/>
+		<xs:attribute name="ExpandVehicleOperatorData" type="PT:YesNo" use="optional" default="N"/>
+		<xs:attribute name="ExpandServiceRequirementData" type="PT:YesNo" use="optional" default="N"/>
+		<xs:attribute name="ExpandDeviationMessageData" type="PT:YesNo" use="optional" default="N"/>
+		<xs:attribute name="ExcludeIntermediateStateChanges" type="PT:YesNo" use="optional" default="N">
+			<xs:annotation>
+				<xs:documentation>Follow up applications only interested in the final states of objects can use this option.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+	</xs:complexType>
+	<!--     -->
+	<xs:complexType name="AssignmentEventSelection"/>
+	<!--     -->
+	<xs:complexType name="NetworkDeviationEventSelection">
+		<xs:attribute name="ExpandDeviationMessageData" type="PT:YesNo" use="optional" default="N"/>
+	</xs:complexType>
+	<!--     -->
+	<xs:complexType name="DeviationCaseEventSelection">
+		<xs:sequence>
+			<xs:element name="ScopeElements" type="ROI:ScopeElements"/>
+			<xs:element name="PublicationScopeElements" type="ROI:PublicationScopeElements"/>
+		</xs:sequence>
+		<xs:attribute name="IncludeSourceControlAction" type="PT:YesNo" use="optional" default="N">
+			<xs:annotation>
+				<xs:documentation>If Y then the underlying Control Action RII-report will be appended in the SourceControlAction attribute.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="DeviationMessageVersionEventsOnly" type="PT:YesNo" use="optional" default="N">
+			<xs:annotation>
+				<xs:documentation>If Y, then all other deviation case events will be excluded. This option could be used for display systems.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+	</xs:complexType>
+	<!--     -->
+	<xs:complexType name="BasicSubscriptionRequest">
+		<xs:complexContent>
+			<xs:extension base="PT:Request">
+				<xs:sequence>
+					<xs:element name="VehicleJourneyEventSelection" type="ROI:VehicleJourneyEventSelection" minOccurs="0"/>
+					<xs:element name="DeviationCaseEventSelection" type="ROI:DeviationCaseEventSelection" minOccurs="0"/>
+					<xs:element name="AssignmentEventSelection" type="ROI:AssignmentEventSelection" minOccurs="0"/>
+					<xs:element name="NetworkDeviationEventSelection" type="ROI:NetworkDeviationEventSelection" minOccurs="0"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<!--     -->
+	<xs:complexType name="SubscriptionSetupRequest">
+		<xs:complexContent>
+			<xs:extension base="ROI:BasicSubscriptionRequest">
+				<xs:attribute name="StartUtcDateTime" type="xs:dateTime" use="optional">
+					<xs:annotation>
+						<xs:documentation>Data that is no longer valid after this point in time should be excluded from the subscription. Thus, vehicle journeys with an end date/time before this point in time should be excluded. If this attribute is omitted then the current time will be used as the start date/time.</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<!--     -->
+	<xs:complexType name="SubscriptionUpdateRequest">
+		<xs:complexContent>
+			<xs:extension base="ROI:BasicSubscriptionRequest">
+				<xs:attribute name="SubscriptionId" type="PT:Id" use="optional">
+					<xs:annotation>
+						<xs:documentation>The subscription to be modified. This attribute can be omitted for single subscription peers.</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<!--     -->
+	<xs:complexType name="SubscriptionTerminationRequest">
+		<xs:complexContent>
+			<xs:extension base="PT:Request">
+				<xs:attribute name="SubscriptionId" type="PT:Id" use="optional">
+					<xs:annotation>
+						<xs:documentation>The subscription to be terminated. If this attribute is omitted then any current subscription held by the requesting Peer should be terminated.</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<!--     -->
+	<xs:complexType name="SubscriptionResumeRequest">
+		<xs:complexContent>
+			<xs:extension base="PT:Request">
+				<xs:attribute name="SubscriptionId" type="PT:Id">
+					<xs:annotation>
+						<xs:documentation>The subscription to be resumed. This attribute can be omitted for single subscription peers.</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+				<xs:attribute name="StartUtcDateTime" type="xs:dateTime" use="optional">
+					<xs:annotation>
+						<xs:documentation>Data that is no longer valid after this point in time should be excluded from the subscription. Thus, vehicle journeys with an end date/time before this point in time should be excluded. If omitted then the subscription is resumed from the last confirmed time, which means that no data will be lost.</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+				<xs:attribute name="SynchronisedUptoUtcDateTime" type="xs:dateTime" use="optional">
+					<xs:annotation>
+						<xs:documentation>This attribute should contain the value from the last received Synchronisation Report. It could also be used to force the synchronisation to start from an earlier time, if previously received data has been lost.  Observe that if this attribute is left out and the StartUtcDateTime is back in time or left out, then previously sent data might be retransmitted.</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<!--     -->
+	<xs:simpleType name="ToDocumentLayoutVersion">
+		<xs:annotation>
+			<xs:documentation>The set of values in the enumeration indicates the range of schema versions that this schema version is backward compatible with. Used to ensure that the schema version that an incoming document was validated against is not in conflict with this schema version.</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:token">
+			<xs:enumeration value="3.0.7"/>
+		</xs:restriction>
+	</xs:simpleType>
+</xs:schema>

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ns0:FromPubTransMessages xmlns:ns0="http://www.pubtrans.com/ROI/3.0" PeerId="1" MaxMessageInterval="PT60S" DocumentLayoutVersion="3.0.9" LocalTimeZoneOffsetTime="PT1H" LocalLanguage="sv">
+  <DeviationCaseUpdateEvent MessageId="598936311">
+    <DeviationCase Id="8830121665806370" Timestamp="2023-10-02T09:49:41.044914+02:00" OperationActionType="INFORMATION" Gid="9076625015103955" SourceNote="JustATest">
+      <ScopeElements>
+        <ScopeElement Id="5024193515258353" VisitCountNumber="1" ConcernsArrivals="Y" ConcernsDepartures="Y">
+          <VehicleJourneyRef Gid="9015001001030320"/>
+          <TimeScope FromDateTime="2023-10-02T07:48:04.487339Z" UptoDateTime="2023-10-02T07:48:04.487357Z"/>
+        </ScopeElement>
+      </ScopeElements>
+      <DeviationReason StandardCategory="RESTOREOPERATION"/>
+      <ReplacedByDeviationCaseRef Id="2" Gid="9076625015103955"/>
+      <ReportedByUser OrganisationalUnitCode="JustATest" OrganisationCode="company">
+        <OrganisationalUnitRef Id="4010000125439279"/>
+      </ReportedByUser>
+    </DeviationCase>
+  </DeviationCaseUpdateEvent>
+</ns0:FromPubTransMessages>

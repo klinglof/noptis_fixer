@@ -1,0 +1,40 @@
+<DeviationCaseCreateEvent MessageId="694528077">
+    <DeviationCase Id="4050001083805107" Timestamp="2021-01-27T09:44:01.85+01:00" OperationActionType="CHANGEOFJOURNEYPATTERN" Gid="9076001037780646" OfficialRegistrationDateTime="2021-01-27T09:44:01.000+01:00" SourceNote="Vehicleref:9031001002500116">
+        <ScopeElements>
+            <ScopeElement Id="4050001083805110" ConcernsArrivals="Y" ConcernsDepartures="Y">
+                <VehicleJourneyRef Gid="9016001002510880" />
+                <JourneyPatternPointRef Gid="9025001000001900" />
+                <TimeScope FromDateTime="2021-01-27T09:50:00.000+01:00" UptoDateTime="2021-01-27T10:07:00.000+01:00" />
+            </ScopeElement>
+            <ScopeElement Id="4050001083805111" ConcernsArrivals="Y" ConcernsDepartures="Y">
+                <VehicleJourneyRef Gid="9016001002510880" />
+                <JourneyPatternPointRef Gid="9025001000001900" />
+                <TimeScope FromDateTime="2021-01-27T09:50:00.000+01:00" UptoDateTime="2021-01-27T10:07:00.000+01:00" />
+            </ScopeElement>
+        </ScopeElements>
+        <DeviationReason StandardCategory="OTHER" CustomCategory="AUTOMATIC TRACK CHANGE" />
+        <ReportedByUser OrganisationalUnitCode="JustATest" OrganisationCode="company">
+            <OrganisationalUnitRef Id="4010000000000000" />
+        </ReportedByUser>
+        <SourceControlAction>
+            <ControlAction RegistrationDateTime="2021-01-27T09:44:01+01:00" SourceNote="Vehicleref:9031001002500116">
+                <ChangeOfJourneyPattern>
+                    <DatedVehicleJourneyRef OperatingDayDate="2021-01-27" Gid="9016001002510880" />
+                    <ChangedPoints>
+                        <ChangedPoint>
+                            <TimetabledPointInJourneyPatternRef>
+                                <JourneyPatternPointRef Gid="9025001000001900" />
+                            </TimetabledPointInJourneyPatternRef>
+                            <TargetDeparturePoint>
+                                <JourneyPatternPointRef Gid="9025001000001900" />
+                            </TargetDeparturePoint>
+                            <TargetArrivalPoint>
+                                <JourneyPatternPointRef Gid="9025001000001900" />
+                            </TargetArrivalPoint>
+                        </ChangedPoint>
+                    </ChangedPoints>
+                </ChangeOfJourneyPattern>
+            </ControlAction>
+        </SourceControlAction>
+    </DeviationCase>
+</DeviationCaseCreateEvent>

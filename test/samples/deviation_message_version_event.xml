@@ -1,0 +1,24 @@
+<ns0:FromPubTransMessages xmlns:ns0="http://www.pubtrans.com/ROI/3.0" PeerId="1" MaxMessageInterval="PT60S" DocumentLayoutVersion="3.0.9" LocalTimeZoneOffsetTime="PT1H" LocalLanguage="sv">
+  <DeviationMessageVersionEvent MessageId="589294460">
+    <DeviationMessageVersion Id="6914554248199013" Timestamp="2023-10-02T10:40:42.772472Z" VersionNumber="1" PublishFromDateTime="2023-10-02T10:40:42.772482Z" PublishUptoDateTime="2023-10-02T10:40:42.772484Z" RequiresPublicationApproval="Y" IsValid="Y" PublicNote="Just a test.">
+      <DeviationCaseRef Id="8830121665806370" Gid="9076625015103955"/>
+      <TargetAudiences>
+        <TargetAudience Id="6010000643857190" TypeCode="PASSENG"/>
+      </TargetAudiences>
+      <MessageVariants>
+        <MessageVariant Id="4050001083805126" Content="Header - TEST" ContentType="text/plain" UsageType="HEADER" Language="sv" IsPublic="Y"/>
+        <MessageVariant Id="4050001083805127" Content="Details - TEST" ContentType="text/plain" UsageType="DETAILS" Language="sv" IsPublic="Y"/>
+        <MessageVariant Id="4050001083805128" Content="Summary - TEST" ContentType="text/plain" UsageType="SUMMARY" Language="sv" IsPublic="Y"/>
+      </MessageVariants>
+      <Priority ImportanceLevel="7" InfluenceLevel="5" UrgencyLevel="1"/>
+      <PublicationScopes>
+        <PublicationScope Id="8033276902724864" IsRestrictedToDeviationScope="Y">
+          <LineRef Gid="9011001001200000"/>
+        </PublicationScope>
+      </PublicationScopes>
+      <ReportedByUser OrganisationalUnitCode="JustATest" OrganisationCode="company">
+        <OrganisationalUnitRef Id="4010000125439279"/>
+      </ReportedByUser>
+    </DeviationMessageVersion>
+  </DeviationMessageVersionEvent>
+</ns0:FromPubTransMessages>

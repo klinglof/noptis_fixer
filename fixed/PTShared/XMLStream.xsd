@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:XMLStream="http://www.pubtrans.com/XMLStream/1.0" xmlns:xs="http://www.w3.org/2001/XMLSchema" targetNamespace="http://www.pubtrans.com/XMLStream/1.0" elementFormDefault="unqualified" attributeFormDefault="unqualified" version="1.0.5">
+	<xs:annotation>
+		<xs:documentation>
+		This document is a property of NOPTIS. The definition of the interface specification defined in this document is a property of NOPTIS.
+		
+		Copyright © NOPTIS 2007-2014.
+		Final and approved versions of the document may be reproduced or used for the purpose of integrating systems according to the NOPTIS standard.
+		By using this document and the solutions designed herein, the user confirms that the material is not being used in a derogatory manner or in a misleading context.
+		The source of the material must be acknowledged and the title of the content must be included when being reproduced as part of another publication or service.
+				 
+		In order to avoid uncertainties for possible users of the standardised interface NOPTIS it is noted that Hogia Public Transport Systems AB,
+		as the owner of the registered trademark PUBTRANS, gives any user of the NOPTIS interface the right to use the names ToPubTrans, FromPubTrans,
+		ToPubTransMessages, FromPubTransMessages and www.pubtrans.com when – and to the extent - this is required to enable the user to technically interact through the NOPTIS interface.
+		The right of use is limited to the aforesaid and is applicable regardless of whether or not the interaction involves a Hogia product or not.
+
+		XMLStream deals mainly with the issues of the session layer ( layer 5 in OSI).
+		This schema should be included by the using schema. It soes not contain its own target namespace, but will inherit the namespace of the including schema.
+				Version history
+				 Version 1.0.2 
+				 - Added additional ErrorTypes
+				 Version 1.0.3
+				 -Adjusted namespace
+			 	Version 1.0.4
+				New target namespace
+				-Element Idle is of complexType Idle. ComplexType Idle added.
+				Version 1.0.5
+				-SystemMessages must be included in the respective schemas importing this schema
+		</xs:documentation>
+	</xs:annotation>
+	<xs:complexType name="MessageBatch">
+		<xs:annotation>
+			<xs:documentation>A set of messages sent in one batch</xs:documentation>
+		</xs:annotation>
+		<xs:attribute name="PeerId" type="xs:token" use="required"/>
+		<xs:attribute name="LastProcessedMessageId" type="XMLStream:MessageId" use="optional">
+			<xs:annotation>
+				<xs:documentation>This attribute contains a reference to the last succesfully recieved message on the parallell stream working in the opposite direction.  Left out if no messages have been processed yet or if the peer does not support this function</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="MaxMessageInterval" type="xs:duration" use="optional" default="PT60S">
+			<xs:annotation>
+				<xs:documentation>Denotes the maximum interval between messages. If no message has been sent after half this timespan, an Idle message must be sent. If at the recieving end, no message has been recieved within the timespan, the reciever shall try to send an error message followed by the closing root element and then terminate the connection. It is the client that is responsible for re-establishing the connection regardless which peer that detects a time-out.
+</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+	</xs:complexType>
+	<!-- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * -->
+	<xs:group name="SystemMessages">
+		<xs:choice>
+			<xs:element name="LastProcessedMessageRequest" type="XMLStream:LastProcessedMessageRequest"/>
+			<xs:element name="LastProcessedMessageResponse" type="XMLStream:LastProcessedMessageResponse"/>
+			<xs:element name="Idle" type="XMLStream:Idle">
+				<xs:annotation>
+					<xs:documentation>If no other messages are sent after half the timespan indicated by the attribute MaxMessageInterval in the MessageBath element, an Idle message must be sent as a reassurance that the communication is OK.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="ErrorMessage" type="XMLStream:ErrorMessage"/>
+			<xs:element name="ErrorResponse" type="XMLStream:ErrorResponse"/>
+		</xs:choice>
+	</xs:group>
+	<!--  *********************************************************  -->
+	<xs:complexType name="LastProcessedMessageResponse">
+		<xs:complexContent>
+			<xs:extension base="XMLStream:Response">
+				<xs:attribute name="LastProcessedMessageId" type="XMLStream:MessageId" use="required">
+					<xs:annotation>
+						<xs:documentation>This attribute contains a reference to the last succesfully recieved message on the parallell stream working in the opposite direction.</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<!--  *********************************************************  -->
+	<xs:complexType name="Idle">
+		<xs:complexContent>
+			<xs:extension base="XMLStream:Message"/>
+		</xs:complexContent>
+	</xs:complexType>
+	<!--  *********************************************************  -->
+	<xs:complexType name="LastProcessedMessageRequest">
+		<xs:complexContent>
+			<xs:extension base="XMLStream:Request"/>
+		</xs:complexContent>
+	</xs:complexType>
+	<!--  *********************************************************  -->
+	<xs:complexType name="AbstractMessage" abstract="true">
+		<xs:attribute name="MessageId" type="XMLStream:MessageId" use="required"/>
+	</xs:complexType>
+	<!--  *********************************************************  -->
+	<xs:complexType name="Message">
+		<xs:complexContent>
+			<xs:extension base="XMLStream:AbstractMessage"/>
+		</xs:complexContent>
+	</xs:complexType>
+	<!--  *********************************************************  -->
+	<xs:complexType name="Request" abstract="true">
+		<xs:complexContent>
+			<xs:extension base="XMLStream:AbstractMessage"/>
+		</xs:complexContent>
+	</xs:complexType>
+	<!--  *********************************************************  -->
+	<xs:complexType name="Response">
+		<xs:complexContent>
+			<xs:extension base="XMLStream:AbstractMessage">
+				<xs:attribute name="OnMessageId" type="XMLStream:MessageId" use="required">
+					<xs:annotation>
+						<xs:documentation>This attribute contains a reference to the MessageId of the orginating Request message from the parallell stream working in the opposite direction. </xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<!--  *********************************************************  -->
+	<xs:complexType name="ErrorMessage">
+		<xs:annotation>
+			<xs:documentation>ErrorMessage indicates there is a problem not specifically connected with a certain recieved message.</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="XMLStream:Message">
+				<xs:attribute name="Type" type="XMLStream:ErrorType" use="required"/>
+				<xs:attribute name="Text" type="xs:string" use="optional"/>
+				<xs:attribute name="Code" type="xs:token" use="optional"/>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<!--  *********************************************************  -->
+	<xs:complexType name="ErrorResponse">
+		<xs:annotation>
+			<xs:documentation>ErrorResponse indicates that there is a problem with a specific recieved message.</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="XMLStream:Message">
+				<xs:attribute name="OnMessageId" type="XMLStream:MessageId" use="required">
+					<xs:annotation>
+						<xs:documentation>This attribute contains a reference to the orginating message.</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+				<xs:attribute name="Type" type="XMLStream:ErrorType" use="required"/>
+				<xs:attribute name="Text" type="xs:string" use="optional"/>
+				<xs:attribute name="Code" type="xs:token" use="optional"/>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<!--  *********************************************************  -->
+	<xs:simpleType name="MessageId">
+		<xs:annotation>
+			<xs:documentation>An identification of a single message. It will be used for logging and synchronization purposes. It is recommended to use an ascending numeric value. However, reusing the same number when retransmitting a timed-out Request could be useful.</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:token"/>
+	</xs:simpleType>
+	<!--  *********************************************************  -->
+	<xs:simpleType name="ErrorType">
+		<xs:restriction base="xs:token">
+			<xs:enumeration value="INTERNALERROR"/>
+			<xs:enumeration value="TIMEOUT"/>
+			<xs:enumeration value="SERVICECLOSED"/>
+			<xs:enumeration value="NOTSUCCEDED"/>
+			<xs:enumeration value="NOTGRANTED"/>
+			<xs:enumeration value="NOTSUPPORTED"/>
+			<xs:enumeration value="NOTUNDERSTOOD"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<!--  *********************************************************  -->
+</xs:schema>

@@ -1,0 +1,592 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:PT="http://www.pubtrans.com/PT/1.0" xmlns:RII="http://www.pubtrans.com/RII/2.0" targetNamespace="http://www.pubtrans.com/RII/2.0" elementFormDefault="unqualified" attributeFormDefault="unqualified" version="2.0.8">
+	<xs:annotation>
+		<xs:documentation>
+		This document is a property of NOPTIS. The definition of the interface specification defined in this document is a property of NOPTIS.
+		
+		Copyright © NOPTIS 2006-2012.
+		Final and approved versions of the document may be reproduced or used for the purpose of integrating systems according to the NOPTIS standard.
+		By using this document and the solutions designed herein, the user confirms that the material is not being used in a derogatory manner or in a misleading context.
+		The source of the material must be acknowledged and the title of the content must be included when being reproduced as part of another publication or service.
+				 
+		In order to avoid uncertainties for possible users of the standardised interface NOPTIS it is noted that Hogia Public Transport Systems AB,
+		as the owner of the registered trademark PUBTRANS, gives any user of the NOPTIS interface the right to use the names ToPubTrans, FromPubTrans,
+		ToPubTransMessages, FromPubTransMessages and www.pubtrans.com when – and to the extent - this is required to enable the user to technically interact through the NOPTIS interface.
+		The right of use is limited to the aforesaid and is applicable regardless of whether or not the interaction involves a Hogia product or not.
+
+		Version 2.0.0 -
+		Version 2.0.1
+		- JourneyCreation extended to allow more alternatives. Old are constructions still supported.
+		Version 2.0.2
+		-Attribute WaitForFeederUntilDateTime replaces attribute UpdatedFetchersEarliestDepartureDateTime in  ConnectionModification
+		Version 2.0.3
+		-Optional NewTypeOfDeparture and NewTypeOfArrival attributes removed from ChangedPoint. 
+		-DirectionOfLine element removed from JourneyCreation since it is a redundant element and Direction is obvious from JourneyPattern
+		-New namespace
+		Version 2.0.4		
+		-Attributes DepartureType and ArrivalType removed in Call complexType
+		-Redundant StopScope group removed
+		-Restructured schema. No actual change for users of schema. 
+		Version 2.0.5
+		-Attribute NewJourneyGid is required in complex type JourneyCreation
+		-Annotation concerning VisitCount added and corrected.
+		-Annotation moved within ModifiedPointInJourneyPattern.
+		Version 2.0.6
+        -Annotation clarifying the BetweenCalls structure added.
+        -Spellnig correction in AllCallsBeforePointInJourneyPatternRef element
+		Version 2.0.7
+		-Spelling correction for AllCallsBeforePointInJourneyPatternRef reversed. Attribute remains misspelled as AllCallsBeforePointInJourneyPatterRef.
+		-Accept Organisational Unit Id  (Department responsible for a specific journey) as Vehicle Operator Ref in Journey Cancellation. If such an Id is entered only journeys managed by that org unit will be cancelled.
+		Version 2.0.8
+		-Add support for Multiple Stop Areas/Points and optional part of day-validity in a change of stop point status request.
+		</xs:documentation>
+	</xs:annotation>
+	<xs:import namespace="http://www.pubtrans.com/PT/1.0" schemaLocation="PTShared/PT-SharedTypes.xsd"/>
+	<xs:include schemaLocation="RII-SharedTypes.xsd"/>
+	<!--  *********************************************************  -->
+	<xs:complexType name="ControlAction">
+		<xs:choice>
+			<xs:group ref="RII:JourneyControlAction"/>
+			<xs:group ref="RII:NetworkControlAction"/>
+			<xs:group ref="RII:ConnectionControlAction"/>
+			<xs:group ref="RII:VehicleControlAction"/>
+		</xs:choice>
+		<xs:attribute name="RegistrationDateTime" type="xs:dateTime" use="optional">
+			<xs:annotation>
+				<xs:documentation>This is the offical time used for penalty-decisions. It could be the time a fax or phone call laying the basis for a control action reached the transport authority.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="SourceNote" type="xs:string" use="optional">
+			<xs:annotation>
+				<xs:documentation>This is a note including a hint of who originally supplied a manual report leading to this control action. It could include name and organisational unit of the information provider.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+	</xs:complexType>
+	<!--  *********************************************************  -->
+	<xs:group name="JourneyControlAction">
+		<xs:choice>
+			<xs:element name="JourneyCreation" type="RII:JourneyCreation" minOccurs="0"/>
+			<xs:element name="JourneyCancellation" type="RII:JourneyCancellation" minOccurs="0"/>
+			<xs:element name="PartialJourneyCancellation" type="RII:CallCancellation" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>This report can be used for shortened journeys and when stops are bypassed by certain journeys</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="JourneyOrdering" type="RII:JourneyOrdering" minOccurs="0"/>
+			<xs:element name="ChangeOfJourneyPattern" type="RII:JourneyPatternModification" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>This report can be used  when stops are replaced by other stops on certain journeys</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="ChangeOfJourneyProgress" type="RII:ChangeOfJourneyProgress" minOccurs="0"/>
+			<xs:element name="ChangeOfJourneyTiming" type="RII:ChangeOfJourneyTiming" minOccurs="0"/>
+			<xs:element name="StopPointAllocation" type="RII:StopPointAllocation" minOccurs="0"/>
+		</xs:choice>
+	</xs:group>
+	<!--  *********************************************************  -->
+	<xs:group name="NetworkControlAction">
+		<xs:choice>
+			<xs:element name="ChangeOfStopPointStatus" type="RII:ChangeOfStopPointStatus" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>This report can be used when a stop is closed for all journeys.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="ChangeOfBridgingDeviceStatus" type="RII:ChangeOfBridgingDeviceStatus" minOccurs="0"/>
+			<xs:element name="ChangeOfStationEntrancePointStatus" type="RII:ChangeOfStationEntrancePointStatus" minOccurs="0"/>
+		</xs:choice>
+	</xs:group>
+	<!--  *********************************************************  -->
+	<xs:group name="ConnectionControlAction">
+		<xs:choice>
+			<xs:element name="ConnectionCreation" type="RII:ExtraConnection" minOccurs="0"/>
+			<xs:element name="ConnectionCancellation" type="RII:CancelledConnection" minOccurs="0"/>
+			<xs:element name="ConnectionModification" type="RII:ModifiedConnection" minOccurs="0"/>
+		</xs:choice>
+	</xs:group>
+	<!--  *********************************************************  -->
+	<xs:group name="VehicleControlAction">
+		<xs:choice>
+			<xs:element name="VehicleWorkAssignment" type="RII:VehicleWorkAssignment" minOccurs="0"/>
+			<xs:element name="VehicleWorkDeassignment" type="RII:VehicleWorkDeassignment" minOccurs="0"/>
+		</xs:choice>
+	</xs:group>
+	<!--  *********************************************************  -->
+	<!-- ***********************     *******************************  -->
+	<!--  *********************************************************  -->
+	<xs:complexType name="TargetPoint">
+		<xs:sequence>
+			<xs:group ref="RII:JourneyPatternPointRefGroup"/>
+		</xs:sequence>
+	</xs:complexType>
+	<!--  *********************************************************  -->
+	<xs:complexType name="ChangedPoints">
+		<xs:sequence>
+			<xs:element name="ChangedPoint" type="RII:ModifiedPointInJourneyPattern" maxOccurs="unbounded"/>
+		</xs:sequence>
+	</xs:complexType>
+	<!--  *********************************************************  -->
+	<xs:complexType name="ModifiedPointInJourneyPattern">
+		<xs:sequence>
+			<xs:annotation>
+				<xs:documentation>Either or both of TargetDeparturePoint and TargetArrivalPoint must be supplied.</xs:documentation>
+			</xs:annotation>
+			<xs:element name="TimetabledPointInJourneyPatternRef" type="RII:PointInJourneyPatternRef">
+				<xs:annotation>
+					<xs:documentation>If attribute VisitCount is omitted then there will be no filtering based on VisitCount. I.e. if this stop is visited several times in the same vehicle journey then all those calls are affected.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="TargetDeparturePoint" type="RII:TargetPoint" minOccurs="0"/>
+			<xs:element name="TargetArrivalPoint" type="RII:TargetPoint" minOccurs="0"/>
+		</xs:sequence>
+	</xs:complexType>
+	<!--  *********************************************************  -->
+	<xs:complexType name="JourneyPatternModification">
+		<xs:sequence>
+			<xs:group ref="RII:JourneyScope"/>
+			<xs:element name="ChangedPoints" type="RII:ChangedPoints"/>
+		</xs:sequence>
+	</xs:complexType>
+	<!-- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * -->
+	<xs:complexType name="CallCancellation">
+		<xs:sequence>
+			<xs:group ref="RII:PartialJourneyScope"/>
+		</xs:sequence>
+		<xs:attribute name="ConcernsArrivals" type="PT:YesNo" use="optional" default="Y"/>
+		<xs:attribute name="ConcernsDepartures" type="PT:YesNo" use="optional" default="Y"/>
+	</xs:complexType>
+	<!--  *********************************************************  -->
+	<xs:complexType name="JourneyCancellation">
+		<xs:group ref="RII:JourneyScope"/>
+	</xs:complexType>
+	<!--  *********************************************************  -->
+	<xs:complexType name="JourneyOrdering">
+		<xs:annotation>
+			<xs:documentation>To revoke this operation use JourneyCancellation.</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="DatedVehicleJourneyRef" type="RII:DatedVehicleJourneyRef"/>
+		</xs:sequence>
+	</xs:complexType>
+	<!--  *********************************************************  -->
+	<xs:complexType name="ChangeOfJourneyProgress">
+		<xs:sequence>
+			<xs:element name="MonitoredVehicleJourneyRef" type="RII:DatedVehicleJourneyRef"/>
+		</xs:sequence>
+		<xs:attribute name="ProgressState" type="RII:ProgressState" use="required"/>
+	</xs:complexType>
+	<!--  *********************************************************  -->
+	<xs:complexType name="VehicleWorkAssignment">
+		<xs:annotation>
+			<xs:documentation/>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="VehicleRef" type="PT:VehicleRef"/>
+			<xs:choice>
+				<xs:element name="DatedBlockRef" type="RII:DatedBlockRef" minOccurs="0"/>
+				<xs:element name="DatedVehicleJourneyRef" type="RII:DatedVehicleJourneyRef" minOccurs="0"/>
+			</xs:choice>
+		</xs:sequence>
+	</xs:complexType>
+	<!--  *********************************************************  -->
+	<xs:complexType name="VehicleWorkDeassignment">
+		<xs:annotation>
+			<xs:documentation/>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="VehicleRef" type="PT:VehicleRef"/>
+			<xs:choice>
+				<xs:element name="DatedBlockRef" type="RII:DatedBlockRef" minOccurs="0"/>
+				<xs:element name="DatedVehicleJourneyRef" type="RII:DatedVehicleJourneyRef" minOccurs="0"/>
+			</xs:choice>
+		</xs:sequence>
+	</xs:complexType>
+	<!--  *********************************************************  -->
+	<xs:complexType name="JourneyCreation">
+		<xs:annotation>
+			<xs:documentation>.</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:sequence>
+				<xs:element name="Start" type="RII:JourneyStart"/>
+				<xs:element name="End" type="RII:JourneyEnd" minOccurs="0">
+					<xs:annotation>
+						<xs:documentation>Only required if the created journey ends before the last point in the cloned vehicle journey or if the created journey is based on a journey pattern.</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+			</xs:sequence>
+			<xs:choice>
+				<xs:sequence>
+					<xs:element name="ClonedVehicleJourneyRef" type="RII:DatedVehicleJourneyRef"/>
+				</xs:sequence>
+				<xs:sequence>
+					<xs:element name="JourneyPatternRef" type="PT:NamedJourneyPatternRef"/>
+					<xs:sequence>
+						<xs:element name="MiddleCall" type="RII:Call" minOccurs="0" maxOccurs="unbounded"/>
+					</xs:sequence>
+				</xs:sequence>
+			</xs:choice>
+			<xs:element name="ReinforcedVehicleJourneyRef" type="RII:DatedVehicleJourneyRef" minOccurs="0"/>
+		</xs:sequence>
+		<xs:attribute name="NewJourneyGid" type="PT:VehicleJourneyGid" use="required"/>
+		<xs:attribute name="OperatingDayDate" type="xs:date" use="optional">
+			<xs:annotation>
+				<xs:documentation>Defaults to current date</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="InformPassengersCondition" type="PT:InformPassengersCondition" use="optional" default="ALWAYS"/>
+	</xs:complexType>
+	<!--  *********************************************************  -->
+	<xs:complexType name="ChangeOfJourneyTiming">
+		<xs:sequence>
+			<xs:element name="DatedVehicleJourneyRef" type="RII:DatedVehicleJourneyRef"/>
+			<xs:choice>
+				<xs:element name="RelativeTime" type="RII:RelativeTime">
+					<xs:annotation>
+						<xs:documentation>Changes to subsequent Calls can be applied using different change models. MINIMAL, LINEAR, STATISTIC</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="TimedCalls" type="RII:TimedCalls"/>
+			</xs:choice>
+		</xs:sequence>
+	</xs:complexType>
+	<!--  *********************************************************  -->
+	<xs:complexType name="ChangeOfStationEntrancePointStatus">
+		<xs:sequence>
+			<xs:element name="StationEntrancePointRef" type="PT:StationEntrancePointRef"/>
+			<xs:element name="TimeScope" type="RII:TimeScope"/>
+		</xs:sequence>
+		<xs:attribute name="Status" type="RII:Status" use="required"/>
+	</xs:complexType>
+	<!--  *********************************************************  -->
+	<xs:complexType name="ChangeOfBridgingDeviceStatus">
+		<xs:sequence>
+			<xs:element name="BridgingDeviceRef" type="PT:BridgingDeviceRef"/>
+			<xs:element name="TimeScope" type="RII:TimeScope"/>
+		</xs:sequence>
+		<xs:attribute name="Status" type="RII:Status" use="required"/>
+	</xs:complexType>
+	<!--  *********************************************************  -->
+	<xs:complexType name="StopRefs">
+		<xs:sequence maxOccurs="unbounded">
+			<xs:choice>
+				<xs:element name="StopPointRef" type="PT:StopPointRef"/>
+				<xs:element name="StopAreaRef" type="PT:StopAreaRef"/>
+			</xs:choice>
+		</xs:sequence>
+	</xs:complexType>
+	<!--  *********************************************************  -->
+	<xs:complexType name="ChangeOfStopPointStatus">
+		<xs:sequence>
+			<xs:choice>
+				<xs:element name="StopPointRef" type="PT:StopPointRef">
+					<xs:annotation>
+						<xs:documentation>Deprecated. Use StopRefs instead.</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="StopAreaRef" type="PT:StopAreaRef">
+					<xs:annotation>
+						<xs:documentation>Deprecated. Use StopRefs instead.</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="StopRefs" type="RII:StopRefs"/>
+			</xs:choice>
+			<xs:element name="TimeScope" type="RII:StopPointStatusTimeScope"/>
+		</xs:sequence>
+		<xs:attribute name="Status" type="RII:Status" use="required"/>
+	</xs:complexType>
+	<!-- *********************************************************  -->
+	<xs:complexType name="AllocatedStopPoint">
+		<xs:sequence minOccurs="0">
+			<xs:annotation>
+				<xs:documentation>The allocated journey pattern point. Should only be provided if it differs from the planned journey pattern point.</xs:documentation>
+			</xs:annotation>
+			<xs:group ref="RII:JourneyPatternPointRefGroup" minOccurs="0"/>
+		</xs:sequence>
+		<xs:attribute name="ReservedFromDateTime" type="xs:dateTime" use="optional">
+			<xs:annotation>
+				<xs:documentation>Stop point is not available before this time.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="ReservedUptoDateTime" type="xs:dateTime" use="optional">
+			<xs:annotation>
+				<xs:documentation>Stop point is not available from this time.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+	</xs:complexType>
+	<!--  *********************************************************  -->
+	<xs:complexType name="StopPointAllocation">
+		<xs:sequence>
+			<xs:element name="DatedVehicleJourneyRef" type="RII:DatedVehicleJourneyRef"/>
+			<xs:element name="TimetabledPointInJourneyPatternRef" type="RII:PointInJourneyPatternRef">
+				<xs:annotation>
+					<xs:documentation>If attribute VisitCount is omitted then VisitCount = 1 is assumed. </xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:choice>
+				<xs:element name="TargetPoint" type="RII:AllocatedStopPoint"/>
+				<xs:sequence>
+					<xs:element name="TargetArrivalPoint" type="RII:AllocatedStopPoint"/>
+					<xs:element name="TargetDeparturePoint" type="RII:AllocatedStopPoint"/>
+				</xs:sequence>
+			</xs:choice>
+		</xs:sequence>
+		<xs:attribute name="MessageToDriver" type="xs:string" use="optional">
+			<xs:annotation>
+				<xs:documentation>Contains additional information to the driver that can not be expressed in data.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+	</xs:complexType>
+	<!--  *********************************************************  -->
+	<xs:complexType name="JourneyStart">
+		<xs:group ref="RII:JourneyPatternPointRefGroup" minOccurs="0"/>
+		<xs:attribute name="EarliestDepartureDateTime" type="xs:dateTime" use="required"/>
+		<xs:attribute name="VisitCount" type="PT:VisitCount" use="optional" default="1"/>
+	</xs:complexType>
+	<!--  *********************************************************  -->
+	<xs:complexType name="JourneyEnd">
+		<xs:sequence>
+			<xs:group ref="RII:JourneyPatternPointRefGroup"/>
+		</xs:sequence>
+		<xs:attribute name="LatestArrivalDateTime" type="xs:dateTime" use="required"/>
+		<xs:attribute name="VisitCount" type="PT:VisitCount" use="optional" default="1"/>
+	</xs:complexType>
+	<!--  *********************************************************  -->
+	<xs:complexType name="RelativeTime">
+		<xs:sequence>
+			<xs:element name="FromPointInJourneyPatternRef" type="RII:PointInJourneyPatternRef" minOccurs="0"/>
+		</xs:sequence>
+		<xs:attribute name="Offset" type="xs:duration" use="required"/>
+		<xs:attribute name="ChangeModel" type="RII:ChangeModel" use="optional" default="MINIMAL"/>
+	</xs:complexType>
+	<!--  *********************************************************  -->
+	<xs:complexType name="TimedCalls">
+		<xs:sequence>
+			<xs:element name="TimedCall" type="RII:TimedCall" maxOccurs="unbounded"/>
+		</xs:sequence>
+	</xs:complexType>
+	<!--  *********************************************************  -->
+	<xs:complexType name="TimeScope">
+		<xs:attribute name="FromDateTime" type="xs:dateTime" use="required"/>
+		<xs:attribute name="UptoDateTime" type="xs:dateTime" use="required"/>
+	</xs:complexType>
+	<!--  *********************************************************  -->
+	<xs:complexType name="StopPointStatusTimeScope">
+		<xs:attribute name="FromDateTime" type="xs:dateTime" use="required"/>
+		<xs:attribute name="UptoDateTime" type="xs:dateTime" use="required"/>
+		<xs:attribute name="FromTimeOffset" type="RII:TimeOffset" use="optional">
+			<xs:annotation>
+				<xs:documentation>If FromTimeOffset is provided UptoTimeOffset must also be provided. If provided these two values further restricts the control action to only apply during part of each day that is within FromDateTime - UptoDateTime period. </xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="UptoTimeOffset" type="RII:TimeOffset" use="optional">
+			<xs:annotation>
+				<xs:documentation>If the value of UptoTimeOffset is less than FromTimeOffset it should be interpreted as beeing on the following date.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+	</xs:complexType>
+	<!--  *********************************************************  -->
+	<xs:simpleType name="TimeOffset">
+		<xs:annotation>
+			<xs:documentation>Time from midnight expressed as hh:mm:ss.sss</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:time"/>
+	</xs:simpleType>
+	<!--  *********************************************************  -->
+	<xs:group name="JourneyScope">
+		<xs:choice>
+			<xs:sequence>
+				<xs:group ref="RII:SimplifiedJourneyScope"/>
+				<xs:element name="TimeScope" type="RII:TimeScope"/>
+				<xs:element name="VehicleOperatorRef" type="RII:VehicleOperatorOrDepartmentRef" minOccurs="0"/>
+			</xs:sequence>
+			<xs:sequence>
+				<xs:element name="DatedVehicleJourneyRef" type="RII:DatedVehicleJourneyRef"/>
+			</xs:sequence>
+		</xs:choice>
+	</xs:group>
+	<!--  *********************************************************  -->
+	<xs:group name="PartialJourneyScope">
+		<xs:sequence>
+			<xs:group ref="RII:JourneyScope"/>
+			<xs:group ref="RII:PartOfJourneyPatternScope"/>
+		</xs:sequence>
+	</xs:group>
+	<!--  *********************************************************  -->
+	<xs:group name="PartOfJourneyPatternScope">
+		<xs:choice>
+			<xs:element name="AllCallsBeforePointInJourneyPatterRef" type="RII:PointInJourneyPatternRef">
+				<xs:annotation>
+					<xs:documentation>If attribute VisitCount is omitted then VisitCount = 1 is assumed.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="AllCallsAfterPointInJourneyPatternRef" type="RII:PointInJourneyPatternRef">
+				<xs:annotation>
+					<xs:documentation>If attribute VisitCount is omitted then VisitCount = 1 is assumed.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="SelectedCalls">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="PointInJourneyPatternRef" type="RII:PointInJourneyPatternRef" maxOccurs="unbounded">
+							<xs:annotation>
+								<xs:documentation>If attribute VisitCount is omitted then there will be no filtering based on VisitCount. I.e. if this stop is visited several times in the same vehicle journey then all those calls are affected.</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="CallsBetweenPoints">
+				<xs:annotation>
+					<xs:documentation>All Calls between, but not including, the from and to points.</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="FromPointInJourneyPatternRef" type="RII:PointInJourneyPatternRef">
+							<xs:annotation>
+								<xs:documentation>If attribute VisitCount is omitted then VisitCount = 1 is assumed.</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+						<xs:element name="ToPointInJourneyPatternRef" type="RII:PointInJourneyPatternRef">
+							<xs:annotation>
+								<xs:documentation>If attribute VisitCount is omitted then the highest applicable VisitCount is assumed. I.e. the last call at this stop is assumed.</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+		</xs:choice>
+	</xs:group>
+	<!--  *********************************************************  -->
+	<xs:group name="JourneysWithinLineScope">
+		<xs:choice>
+			<xs:element name="VehicleJourneyRef" type="PT:VehicleJourneyRef"/>
+			<xs:element name="JourneysOnDirectionOfLineRef" type="PT:DirectionOfLineRef"/>
+		</xs:choice>
+	</xs:group>
+	<!--  *********************************************************  -->
+	<xs:group name="SimplifiedJourneyScope">
+		<xs:choice>
+			<xs:element name="VehicleJourneyRef" type="PT:VehicleJourneyRef"/>
+			<xs:element name="DirectionOfLineRef" type="PT:DirectionOfLineRef"/>
+			<xs:element name="LineRef" type="PT:LineRef"/>
+			<xs:element name="TransportAuthorityRef" type="PT:TransportAuthorityRef"/>
+		</xs:choice>
+	</xs:group>
+	<!-- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * -->
+	<xs:group name="JourneyPatternPointRefGroup">
+		<xs:choice>
+			<xs:element name="StopPointRef" type="PT:StopPointRef"/>
+			<xs:element name="JourneyPatternPointRef" type="PT:JourneyPatternPointRef"/>
+		</xs:choice>
+	</xs:group>
+	<!-- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * -->
+	<xs:complexType name="PointInJourneyPatternRef">
+		<xs:sequence>
+			<xs:group ref="RII:JourneyPatternPointRefGroup"/>
+		</xs:sequence>
+		<xs:attribute name="VisitCount" type="PT:VisitCount" use="optional"/>
+	</xs:complexType>
+	<!--  -->
+	<xs:complexType name="DatedCallRef">
+		<xs:sequence>
+			<xs:element name="DatedVehicleJourneyRef" type="RII:DatedVehicleJourneyRef"/>
+			<xs:group ref="RII:JourneyPatternPointRefGroup"/>
+		</xs:sequence>
+		<xs:attribute name="VisitCount" type="PT:VisitCount" use="optional" default="1"/>
+	</xs:complexType>
+	<!--  -->
+	<xs:complexType name="DatedVehicleJourneyRef">
+		<xs:attribute name="OperatingDayDate" type="xs:date" use="optional">
+			<xs:annotation>
+				<xs:documentation>Defaults to current date</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="Gid" type="RII:VehicleJourneyGidOrId" use="required">
+			<xs:annotation>
+				<xs:documentation>It is acceptable to provide the DOI Id of the VehicleJourney instead of Gid</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+	</xs:complexType>
+	<!--  -->
+	<xs:complexType name="DatedBlockRef">
+		<xs:attribute name="OperatingDayDate" type="xs:date" use="optional">
+			<xs:annotation>
+				<xs:documentation>Defaults to current date</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="Gid" type="PT:BlockGid" use="required"/>
+	</xs:complexType>
+	<!--  -->
+	<!--  *********************************************************  -->
+	<xs:complexType name="Call">
+		<xs:sequence>
+			<xs:element name="PointInJourneyPatternRef" type="RII:PointInJourneyPatternRef">
+				<xs:annotation>
+					<xs:documentation>If attribute VisitCount is omitted then VisitCount = 1 is assumed.     </xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="Departure" minOccurs="0">
+				<xs:complexType>
+					<xs:attribute name="EarliestDateTime" type="xs:dateTime" use="optional"/>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="Arrival" minOccurs="0">
+				<xs:complexType>
+					<xs:attribute name="LatestDateTime" type="xs:dateTime" use="optional"/>
+				</xs:complexType>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<!--  *********************************************************  -->
+	<xs:complexType name="TimedCall">
+		<xs:sequence>
+			<xs:element name="PointInJourneyPatternRef" type="RII:PointInJourneyPatternRef">
+				<xs:annotation>
+					<xs:documentation>If attribute VisitCount is omitted then VisitCount = 1 is assumed. </xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="Departure" minOccurs="0">
+				<xs:complexType>
+					<xs:attribute name="EarliestDateTime" type="xs:dateTime" use="optional"/>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="Arrival" minOccurs="0">
+				<xs:complexType>
+					<xs:attribute name="LatestDateTime" type="xs:dateTime" use="optional"/>
+				</xs:complexType>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<!-- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * -->
+	<xs:complexType name="CancelledConnection">
+		<xs:sequence>
+			<xs:element name="FeederCallRef" type="RII:DatedCallRef"/>
+			<xs:element name="FetcherCallRef" type="RII:DatedCallRef"/>
+		</xs:sequence>
+	</xs:complexType>
+	<!-- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * -->
+	<xs:complexType name="ModifiedConnection">
+		<xs:sequence>
+			<xs:element name="FeederCallRef" type="RII:DatedCallRef"/>
+			<xs:element name="OriginalFetcherCallRef" type="RII:DatedCallRef"/>
+			<xs:element name="NewFetcherCallRef" type="RII:DatedCallRef" minOccurs="0"/>
+		</xs:sequence>
+		<xs:attribute name="WaitForFeederUntilDateTime" type="xs:dateTime" use="optional"/>
+	</xs:complexType>
+	<!-- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * -->
+	<xs:complexType name="ExtraConnection">
+		<xs:sequence>
+			<xs:element name="FeederCallRef" type="RII:DatedCallRef"/>
+			<xs:element name="FetcherCallRef" type="RII:DatedCallRef"/>
+		</xs:sequence>
+		<xs:attribute name="MaxWaitForFeederDuration" type="xs:duration" use="required"/>
+		<xs:attribute name="MinChangeDuration" type="xs:duration" use="optional"/>
+		<xs:attribute name="IsContinuingVehicle" type="PT:YesNo" use="optional" default="N"/>
+		<xs:attribute name="IsExposedToStaff" type="PT:YesNo" use="optional" default="Y"/>
+		<xs:attribute name="IsExposedToPassengers" type="PT:YesNo" use="optional" default="Y"/>
+	</xs:complexType>
+	<!-- -->
+	<xs:complexType name="VehicleOperatorOrDepartmentRef">
+		<xs:attribute name="Gid" type="RII:VehicleOperatorGidOrDepartmentId" use="required"/>
+	</xs:complexType>
+</xs:schema>

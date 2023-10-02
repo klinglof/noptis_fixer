@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ns0:FromPubTransMessages xmlns:ns0="http://www.pubtrans.com/ROI/3.0" PeerId="1" MaxMessageInterval="PT60S" DocumentLayoutVersion="3.0.9" LocalTimeZoneOffsetTime="PT1H" LocalLanguage="sv">
+<PublicationDecisionEvent MessageId="356082031">
+    <PublicationDecision Id="4887749894951189" Timestamp="2023-06-27T15:08:33.123+02:00" IsApproved="Y" CreatedTimestamp="2023-06-27T15:08:33.123+02:00" IsValid="Y">
+    <PublicationScopeRef Id="8033276902724864"/>
+    <DecidedByUser Name="****" OrganisationalUnitCode="JustATest" OrganisationCode="company">
+        <OrganisationalUnitRef Id="6010000643857178"/>
+    </DecidedByUser>
+    </PublicationDecision>
+</PublicationDecisionEvent>
+</ns0:FromPubTransMessages>
