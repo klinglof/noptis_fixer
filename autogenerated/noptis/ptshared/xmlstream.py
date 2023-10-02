@@ -3,27 +3,27 @@ from enum import Enum
 from typing import Optional
 from xsdata.models.datatype import XmlDuration
 
-__NAMESPACE__ = "http://www.pubtrans.com/XMLStream/1.0"
+__NAMESPACE__ = 'http://www.pubtrans.com/XMLStream/1.0'
 
 
 @dataclass
 class AbstractMessage:
     message_id: Optional[str] = field(default=None,
                                       metadata={
-                                          "name": "MessageId",
-                                          "type": "Attribute",
-                                          "required": True,
+                                          'name': 'MessageId',
+                                          'type': 'Attribute',
+                                          'required': True,
                                       })
 
 
 class ErrorType(Enum):
-    INTERNALERROR = "INTERNALERROR"
-    TIMEOUT = "TIMEOUT"
-    SERVICECLOSED = "SERVICECLOSED"
-    NOTSUCCEDED = "NOTSUCCEDED"
-    NOTGRANTED = "NOTGRANTED"
-    NOTSUPPORTED = "NOTSUPPORTED"
-    NOTUNDERSTOOD = "NOTUNDERSTOOD"
+    INTERNALERROR = 'INTERNALERROR'
+    TIMEOUT = 'TIMEOUT'
+    SERVICECLOSED = 'SERVICECLOSED'
+    NOTSUCCEDED = 'NOTSUCCEDED'
+    NOTGRANTED = 'NOTGRANTED'
+    NOTSUPPORTED = 'NOTSUPPORTED'
+    NOTUNDERSTOOD = 'NOTUNDERSTOOD'
 
 
 @dataclass
@@ -47,20 +47,20 @@ class MessageBatch:
     """
     peer_id: Optional[str] = field(default=None,
                                    metadata={
-                                       "name": "PeerId",
-                                       "type": "Attribute",
-                                       "required": True,
+                                       'name': 'PeerId',
+                                       'type': 'Attribute',
+                                       'required': True,
                                    })
     last_processed_message_id: Optional[str] = field(
         default=None,
         metadata={
-            "name": "LastProcessedMessageId",
-            "type": "Attribute",
+            'name': 'LastProcessedMessageId',
+            'type': 'Attribute',
         })
-    max_message_interval: XmlDuration = field(default=XmlDuration("PT60S"),
+    max_message_interval: XmlDuration = field(default=XmlDuration('PT60S'),
                                               metadata={
-                                                  "name": "MaxMessageInterval",
-                                                  "type": "Attribute",
+                                                  'name': 'MaxMessageInterval',
+                                                  'type': 'Attribute',
                                               })
 
 
@@ -83,9 +83,9 @@ class Response(AbstractMessage):
     """
     on_message_id: Optional[str] = field(default=None,
                                          metadata={
-                                             "name": "OnMessageId",
-                                             "type": "Attribute",
-                                             "required": True,
+                                             'name': 'OnMessageId',
+                                             'type': 'Attribute',
+                                             'required': True,
                                          })
 
 
@@ -97,19 +97,19 @@ class ErrorMessage(Message):
     """
     type_value: Optional[ErrorType] = field(default=None,
                                             metadata={
-                                                "name": "Type",
-                                                "type": "Attribute",
-                                                "required": True,
+                                                'name': 'Type',
+                                                'type': 'Attribute',
+                                                'required': True,
                                             })
     text: Optional[str] = field(default=None,
                                 metadata={
-                                    "name": "Text",
-                                    "type": "Attribute",
+                                    'name': 'Text',
+                                    'type': 'Attribute',
                                 })
     code: Optional[str] = field(default=None,
                                 metadata={
-                                    "name": "Code",
-                                    "type": "Attribute",
+                                    'name': 'Code',
+                                    'type': 'Attribute',
                                 })
 
 
@@ -127,25 +127,25 @@ class ErrorResponse(Message):
     """
     on_message_id: Optional[str] = field(default=None,
                                          metadata={
-                                             "name": "OnMessageId",
-                                             "type": "Attribute",
-                                             "required": True,
+                                             'name': 'OnMessageId',
+                                             'type': 'Attribute',
+                                             'required': True,
                                          })
     type_value: Optional[ErrorType] = field(default=None,
                                             metadata={
-                                                "name": "Type",
-                                                "type": "Attribute",
-                                                "required": True,
+                                                'name': 'Type',
+                                                'type': 'Attribute',
+                                                'required': True,
                                             })
     text: Optional[str] = field(default=None,
                                 metadata={
-                                    "name": "Text",
-                                    "type": "Attribute",
+                                    'name': 'Text',
+                                    'type': 'Attribute',
                                 })
     code: Optional[str] = field(default=None,
                                 metadata={
-                                    "name": "Code",
-                                    "type": "Attribute",
+                                    'name': 'Code',
+                                    'type': 'Attribute',
                                 })
 
 
@@ -169,7 +169,7 @@ class LastProcessedMessageResponse(Response):
     last_processed_message_id: Optional[str] = field(
         default=None,
         metadata={
-            "name": "LastProcessedMessageId",
-            "type": "Attribute",
-            "required": True,
+            'name': 'LastProcessedMessageId',
+            'type': 'Attribute',
+            'required': True,
         })
