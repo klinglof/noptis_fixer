@@ -8,12 +8,10 @@ import fix_file_errors
 
 
 @click.command()
-@click.option(
-    '--schema-path',
-    type=click.Path(exists=True, file_okay=False, resolve_path=True),
-    help=('Folder root path to xml schema files. '
-          'Will download schema from Noptis if omitted.')
-)
+@click.option('--schema-path',
+              type=click.Path(exists=True, file_okay=False, resolve_path=True),
+              help=('Folder root path to xml schema files. '
+                    'Will download schema from Noptis if omitted.'))
 @click.option(
     '--destination',
     default='temp/fixed',
@@ -25,7 +23,13 @@ import fix_file_errors
     default='temp.noptis',
     help='Module path to generated python library to. Example: temp.noptis',
 )
-def cli(schema_path, destination, destination_lib):
+@click.option(
+    '--pretty',
+    is_flag=True,
+    default=False,
+    help='If generated code should be formatted.',
+)
+def cli(schema_path, destination, destination_lib, pretty):
     """Generates fixed ROI schema files from Noptis."""
     if schema_path is None:
         with tempfile.TemporaryDirectory() as temp_dir:
@@ -38,7 +42,8 @@ def cli(schema_path, destination, destination_lib):
                                     fix_path=pathlib.Path(destination))
     fix_file_errors.generate_library(
         fixed_files_path=pathlib.Path(destination),
-        package_name=destination_lib)
+        package_name=destination_lib,
+        make_pretty=pretty)
 
 
 if __name__ == '__main__':
