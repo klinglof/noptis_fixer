@@ -1,6 +1,17 @@
 # Noptis Fixer
 Fixes errors in the Noptis xml schema (xsd) and generates python code.
 
+## Setup
+```commandline
+pip install -r requirements.txt
+```
+
+### Optional
+```commandline
+sudo apt install yapf
+pip install pre-commit
+```
+
 ## Usage
 TL;DR;
 ```commandline
@@ -9,6 +20,10 @@ python noptis_fixer.py
 
 By default, it saves schemas and libraries to temp/.
 
+For more information use:
+```commandline
+python noptis_fixer.py --help
+```
 
 ### Generate correct xml schema (xsd)
 The original schema contains a few errors:

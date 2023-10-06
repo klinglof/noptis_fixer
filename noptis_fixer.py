@@ -24,12 +24,12 @@ import fix_file_errors
     help='Module path to generated python library to. Example: temp.noptis',
 )
 @click.option(
-    '--pretty',
+    '--make-pretty',
     is_flag=True,
     default=False,
     help='If generated code should be formatted.',
 )
-def cli(schema_path, destination, destination_lib, pretty):
+def cli(schema_path, destination, destination_lib, make_pretty):
     """Generates fixed ROI schema files from Noptis."""
     if schema_path is None:
         with tempfile.TemporaryDirectory() as temp_dir:
@@ -43,7 +43,7 @@ def cli(schema_path, destination, destination_lib, pretty):
     fix_file_errors.generate_library(
         fixed_files_path=pathlib.Path(destination),
         package_name=destination_lib,
-        make_pretty=pretty)
+        make_pretty=make_pretty)
 
 
 if __name__ == '__main__':
