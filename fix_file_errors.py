@@ -91,7 +91,7 @@ def generate_library(fixed_files_path,
     os.system(f'xsdata -r {fixed_files_path} --package {package_name}')
     os.system(f'xsdata {fixed_files_path}{os.sep}ROI-FromPubTrans.xsd '
               f'--package {package_name}')
-    package_path = package_name.replace(".", os.sep)
+    package_path = package_name.replace('.', os.sep)
     if make_pretty:
         os.system(f'yapf -ir {package_path}')
         package_files = (str(f) for f in pathlib.Path(package_path).rglob('*')
@@ -105,7 +105,7 @@ if __name__ == '__main__':
     FIX_PATH = pathlib.Path('temp/fixed')
     PACKAGE_NAME = 'temp.noptis'
 
-    download.download_schema(SCHEMA_PATH)
+    download.schema(SCHEMA_PATH)
     apply_fixes(SCHEMA_PATH, FIX_PATH)
     generate_library(FIX_PATH, PACKAGE_NAME)
     schema = schema_collection(FIX_PATH)

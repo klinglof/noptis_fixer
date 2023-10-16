@@ -1,7 +1,9 @@
 # Install dependencies
-DEPENDENCIES="yapf"
-sudo apt-get update
-sudo apt-get install -y "$DEPENDENCIES"
+#DEPENDENCIES="yapf"
+#sudo apt-get update
+#sudo apt-get install -y "$DEPENDENCIES"
+
+pip install -r requirements.txt
 
 # Setup installation yapf path for use with pycharm
 if [ ! -e "/usr/local/bin/yapf" ]; then

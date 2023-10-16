@@ -33,7 +33,7 @@ def cli(schema_path, destination, destination_lib, make_pretty):
     """Generates fixed ROI schema files from Noptis."""
     if schema_path is None:
         with tempfile.TemporaryDirectory() as temp_dir:
-            download.download_schema(pathlib.Path(temp_dir))
+            download.schema(pathlib.Path(temp_dir))
             fix_file_errors.apply_fixes(
                 schema_root_path=pathlib.Path(temp_dir),
                 fix_path=pathlib.Path(destination))

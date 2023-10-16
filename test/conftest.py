@@ -21,7 +21,7 @@ def xml_folder():
 @pytest.fixture(scope='session')
 def fixed_files(temp_directory):
     schema_path = pathlib.Path(temp_directory, 'raw')
-    download.download_schema(schema_path)
+    download.schema(schema_path)
     fix_path = pathlib.Path('temp', 'fixed')
     fix_file_errors.apply_fixes(schema_path, fix_path)
     yield fix_file_errors.schema_collection(fix_path)
