@@ -1,6 +1,10 @@
 # Noptis Fixer
 Fixes errors in the Noptis xml schema (xsd) and generates python code.
 
+## TL;DR;
+The fixed schema can be found in static/fixed
+A generated python lib from the noptis schema can be found in static/noptis
+
 ## Setup
 ```commandline
 pip install -r requirements.txt

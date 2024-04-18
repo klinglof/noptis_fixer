@@ -1,0 +1,546 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:PT="http://www.pubtrans.com/PT/1.0" xmlns:xs="http://www.w3.org/2001/XMLSchema" targetNamespace="http://www.pubtrans.com/PT/1.0" elementFormDefault="qualified" attributeFormDefault="unqualified" version="1.0.6">
+	<xs:annotation>
+		<xs:documentation>
+		This document is a property of NOPTIS. The definition of the interface specification defined in this document is a property of NOPTIS.
+
+		Copyright © NOPTIS 2006.
+		Final and approved versions of the document may be reproduced or used for the purpose of integrating systems according to the NOPTIS standard.
+		By using this document and the solutions designed herein, the user confirms that the material is not being used in a derogatory manner or in a misleading context.
+		The source of the material must be acknowledged and the title of the content must be included when being reproduced as part of another publication or service.
+
+		In order to avoid uncertainties for possible users of the standardised interface NOPTIS it is noted that Hogia Public Transport Systems AB,
+		as the owner of the registered trademark PUBTRANS, gives any user of the NOPTIS interface the right to use the names ToPubTrans, FromPubTrans,
+		ToPubTransMessages, FromPubTransMessages and www.pubtrans.com when – and to the extent - this is required to enable the user to technically interact through the NOPTIS interface.
+		The right of use is limited to the aforesaid and is applicable regardless of whether or not the interaction involves a Hogia product or not.
+
+			Version 1.0.1 -
+			Version 1.02 - Extended Secondary Destination Types
+			Version 1.03 -
+				NamedJourneyPatternRef replaces JourneyPatternRef
+				STOP_IF_ALIGHTING, STOP_IF_BOARDING replaced by STOP_IF_REQUIRED
+				Simple type SequenceNumber added
+
+			Version 1.0.4
+				STOP_IF_ALIGHTING, STOP_IF_BOARDING reinstated
+				DirectionGid added
+				DirectionOfLineRef adjusted
+
+			Version 1.0.5
+				New target namespace
+
+			Version 1.0.6
+			- Attribute in complex types VehicleOperatorRef and TransportAuthorityRef renamed to Gid
+			-Simple type LocalDateTime added
+
+		</xs:documentation>
+	</xs:annotation>
+	<xs:include schemaLocation="PT-XMLStream.xsd"/>
+	<!--  *********************************************************  -->
+	<xs:simpleType name="Id">
+		<xs:restriction base="xs:long"/>
+	</xs:simpleType>
+	<!--  -->
+	<xs:simpleType name="YesNo">
+		<xs:restriction base="xs:token">
+			<xs:enumeration value="Y"/>
+			<xs:enumeration value="N"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<!--  -->
+	<xs:simpleType name="Code">
+		<xs:annotation>
+			<xs:documentation>A user defined value, often used as an identifier.</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:token">
+			<xs:minLength value="1"/>
+			<xs:maxLength value="8"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<!--  -->
+	<xs:simpleType name="Count">
+		<xs:annotation>
+			<xs:documentation>A non-negative integer.</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:nonNegativeInteger"/>
+	</xs:simpleType>
+	<!--  -->
+	<xs:simpleType name="SequenceNumber">
+		<xs:annotation>
+			<xs:documentation>The position in an ordered list of some kind. Synonym with ORDER according to Transmodel</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:positiveInteger">
+			<xs:maxInclusive value="10000"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="ContractorNumber">
+		<xs:restriction base="xs:nonNegativeInteger">
+			<xs:minInclusive value="0"/>
+			<xs:maxInclusive value="9999"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<!--  -->
+	<xs:simpleType name="GenericDirection">
+		<xs:annotation>
+			<xs:documentation>Used to separate routes (journey patterns) into two main groups running in opposite directions. The grouping could be based on such aspects as the direction being inward, outward or clockwise, anti-clockwise. </xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:token">
+			<xs:enumeration value="ODD"/>
+			<xs:enumeration value="EVEN"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<!--  -->
+	<xs:simpleType name="Gid">
+		<xs:annotation>
+			<xs:documentation>Gid, is a 16 digit number used by the PubTrans database to identify an object uniquely in the scope of a date. A Gid is a key built from meaningful information.</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:nonNegativeInteger">
+			<xs:minInclusive value="9000000000000000"/>
+			<xs:maxInclusive value="9999999999999999"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<!--  -->
+	<xs:simpleType name="JourneyNumber">
+		<xs:restriction base="xs:nonNegativeInteger">
+			<xs:minInclusive value="1"/>
+			<xs:maxInclusive value="99999"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<!--  -->
+	<xs:simpleType name="JourneyPatternPointNumber">
+		<xs:annotation>
+			<xs:documentation>A unique number within a transport authority used for StopPoints, ViaPoints and ParkingPoints.</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:nonNegativeInteger">
+			<xs:minInclusive value="1"/>
+			<xs:maxInclusive value="99999999"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<!--  -->
+	<xs:simpleType name="LineDesignation">
+		<xs:annotation>
+			<xs:documentation>The public identification of the Line, used in all passenger information.</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:token">
+			<xs:minLength value="1"/>
+			<xs:maxLength value="8"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<!--  -->
+	<xs:simpleType name="LineNumber">
+		<xs:annotation>
+			<xs:documentation>Technical number for a Line. This number must be unique in the scope of a transport authority any given date. See also LineDesignation.</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:nonNegativeInteger">
+			<xs:minInclusive value="0"/>
+			<xs:maxInclusive value="9999"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<!--  -->
+	<xs:simpleType name="Meters">
+		<xs:annotation>
+			<xs:documentation>A distance or length in meters.</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:decimal">
+			<xs:minInclusive value="0.00"/>
+			<xs:totalDigits value="12"/>
+			<xs:fractionDigits value="2"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<!--  -->
+	<xs:simpleType name="Name">
+		<xs:restriction base="xs:normalizedString">
+			<xs:maxLength value="50"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<!--  -->
+	<xs:simpleType name="Percent">
+		<xs:annotation>
+			<xs:documentation> 0 - 100</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:nonNegativeInteger">
+			<xs:maxInclusive value="100"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<!--  -->
+	<xs:simpleType name="ShortName">
+		<xs:annotation>
+			<xs:documentation>.</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:normalizedString">
+			<xs:maxLength value="16"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<!--  -->
+	<xs:simpleType name="StopPointNumber">
+		<xs:annotation>
+			<xs:documentation>The local number within the StopArea</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:nonNegativeInteger">
+			<xs:minInclusive value="1"/>
+			<xs:maxInclusive value="999"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<!--  -->
+	<xs:simpleType name="StopAreaNumber">
+		<xs:restriction base="xs:nonNegativeInteger">
+			<xs:minInclusive value="1"/>
+			<xs:maxInclusive value="999999"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<!--  -->
+	<xs:simpleType name="Note">
+		<xs:annotation>
+			<xs:documentation>A supplementary information that might be released to the public.</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:token">
+			<xs:minLength value="1"/>
+			<xs:maxLength value="255"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<!--  -->
+	<xs:simpleType name="StopPointDesignation">
+		<xs:annotation>
+			<xs:documentation>The local identification to the public. Typically a letter or a 1 or 2 digit number</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:token">
+			<xs:minLength value="1"/>
+			<xs:maxLength value="4"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<!--  -->
+	<xs:simpleType name="ServiceTypeCode">
+		<xs:restriction base="xs:string"/>
+	</xs:simpleType>
+	<!--  -->
+	<xs:simpleType name="StopPointType">
+		<xs:annotation>
+			<xs:documentation>I.e. A plattform or a refuge.</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:token">
+			<xs:enumeration value="BUSSTOP"/>
+			<xs:enumeration value="REFUGE"/>
+			<xs:enumeration value="PLATFORM"/>
+			<xs:enumeration value="TRACK"/>
+			<xs:enumeration value="GATE"/>
+			<xs:enumeration value="PIER"/>
+			<xs:enumeration value="ENTRANCE"/>
+			<xs:enumeration value="EXIT"/>
+			<xs:enumeration value="UNSPECIFIED"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<!--  -->
+	<xs:simpleType name="TransportMode">
+		<xs:annotation>
+			<xs:documentation>Classification of transport systems. I. e. TRAIN, FERRY</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:token">
+			<xs:enumeration value="BUS"/>
+			<xs:enumeration value="TRAM"/>
+			<xs:enumeration value="METRO"/>
+			<xs:enumeration value="TRAIN"/>
+			<xs:enumeration value="FERRY"/>
+			<xs:enumeration value="SHIP"/>
+			<xs:enumeration value="TAXI"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<!--  -->
+	<xs:simpleType name="ArrivalType">
+		<xs:annotation>
+			<xs:documentation>Denotes conditions for alighting at a stop or flexible alighting up to this point.</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:token">
+			<xs:enumeration value="NO_STOP"/>
+			<xs:enumeration value="NO_ALIGHTING"/>
+			<xs:enumeration value="STOP_IF_ALIGHTING"/>
+			<xs:enumeration value="ALWAYS_STOP"/>
+			<xs:enumeration value="FLEXIBLE_ALIGHTING_UPTO_HERE"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<!--  -->
+	<xs:simpleType name="DepartureType">
+		<xs:annotation>
+			<xs:documentation>Denotes conditions for boarding at a stop or flexible boarding from this point.</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:token">
+			<xs:enumeration value="NO_STOP"/>
+			<xs:enumeration value="NO_BOARDING"/>
+			<xs:enumeration value="STOP_IF_BOARDING"/>
+			<xs:enumeration value="ALWAYS_STOP"/>
+			<xs:enumeration value="FLEXIBLE_BOARDING_FROM_HERE"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<!--  -->
+	<xs:simpleType name="SecondaryDestinationType">
+		<xs:annotation>
+			<xs:documentation>Denotes how the second "row" of the destination text should be interpreted. I. e.  a via destination </xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:token">
+			<xs:enumeration value="ENDS_AT">
+				<xs:annotation>
+					<xs:documentation>Denotes that the Secondary Destination is a more precise identification of the Primary Destination, like a terminal name when the Primary Destination is a city.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="VIA">
+				<xs:annotation>
+					<xs:documentation>Denotes that the Secondary Destination is a via-name.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="TRANSFER_AT">
+				<xs:annotation>
+					<xs:documentation>Transfer at secondary destination and continue to primary destination.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="CONTINUE_TO">
+				<xs:annotation>
+					<xs:documentation>Continue to secondary destination after transferring at primary destination.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="MESSAGE">
+				<xs:annotation>
+					<xs:documentation>Denotes that the Secondary Destination is a message of some kind, like when announcing the VehicleJourney as an extra run.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="UNKNOWN">
+				<xs:annotation>
+					<xs:documentation>Denotes that the Secondary Destination is undefined.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+		</xs:restriction>
+	</xs:simpleType>
+	<!--  -->
+	<xs:simpleType name="InformPassengersCondition">
+		<xs:annotation>
+			<xs:documentation>Describes under which conditions passengers should be informed.</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:token">
+			<xs:enumeration value="ALWAYS"/>
+			<xs:enumeration value="ONLY_IF_ORDERED"/>
+			<xs:enumeration value="ONLY_IF_SIGNED_ON"/>
+			<xs:enumeration value="NEVER"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<!--  -->
+	<xs:simpleType name="VisitCount">
+		<xs:annotation>
+			<xs:documentation>Normally each stop is called only once during a Journey. However, some Journeys have such JourneyPatterns that the same stop is called again. In such instances more information must be provided so that it is possible to distinguish between the first call and consecutive calls. A call refering to the first time a stop occurs in the JourneyPattern has VisitCount =  1. The next time the same stop is called  the value 2 should be used.</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:nonNegativeInteger"/>
+	</xs:simpleType>
+	<!--  -->
+	<xs:simpleType name="LocalDateTime">
+		<xs:annotation>
+			<xs:documentation>The UTC date and time presented with approriate offset according to the local time zone and adjustment for European Summer Time.
+			E.g. The local time 13:00 on the date 2005-06-30 in Sweden will be provided as "2005-06-30T13:00:00+02:00" </xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:dateTime"/>
+	</xs:simpleType>
+	<!--  -->
+	<xs:complexType name="EmployeeRef">
+		<xs:attribute name="Gid" type="PT:EmployeeGid" use="required"/>
+	</xs:complexType>
+	<!--  -->
+	<xs:complexType name="DutyRef">
+		<xs:attribute name="Gid" type="PT:Gid" use="required"/>
+	</xs:complexType>
+	<!--  -->
+	<xs:complexType name="PlaceRef">
+		<xs:attribute name="Gid" type="PT:PlaceGid" use="required"/>
+	</xs:complexType>
+	<!--  -->
+	<xs:complexType name="VehicleRef">
+		<xs:attribute name="Gid" type="PT:VehicleGid" use="required"/>
+	</xs:complexType>
+	<!--  -->
+	<xs:complexType name="BlockRef">
+		<xs:attribute name="Gid" type="PT:BlockGid" use="required"/>
+	</xs:complexType>
+	<!--  -->
+	<xs:complexType name="StationEntrancePointRef">
+		<xs:attribute name="Gid" type="PT:StationEntrancePointGid" use="required"/>
+	</xs:complexType>
+	<!--  -->
+	<xs:complexType name="BridgingDeviceRef">
+		<xs:attribute name="Gid" type="PT:BridgingDeviceGid" use="required"/>
+	</xs:complexType>
+	<!--  -->
+	<xs:complexType name="TransportAuthorityRef">
+		<xs:attribute name="Gid" type="PT:TransportAuthorityGid" use="required"/>
+	</xs:complexType>
+	<!--  -->
+	<xs:complexType name="VehicleOperatorRef">
+		<xs:attribute name="Gid" type="PT:ContractorGid" use="required"/>
+	</xs:complexType>
+	<!--  -->
+	<xs:complexType name="StopPointRef">
+		<xs:attribute name="Gid" type="PT:StopPointGid" use="required"/>
+	</xs:complexType>
+	<!--  -->
+	<xs:complexType name="JourneyPatternPointRef">
+		<xs:attribute name="Gid" type="PT:JourneyPatternPointGid" use="required"/>
+	</xs:complexType>
+	<!--  -->
+	<xs:complexType name="StopAreaRef">
+		<xs:attribute name="Gid" type="PT:StopAreaGid" use="required"/>
+	</xs:complexType>
+	<!--  -->
+	<xs:complexType name="VehicleJourneyRef">
+		<xs:attribute name="Gid" type="PT:VehicleJourneyGid" use="required"/>
+	</xs:complexType>
+	<!--  -->
+	<xs:complexType name="DirectionOfLineRef">
+		<xs:attribute name="Gid" type="PT:DirectionGid" use="required"/>
+	</xs:complexType>
+	<!--  -->
+	<xs:complexType name="LineRef">
+		<xs:attribute name="Gid" type="PT:LineGid" use="required"/>
+	</xs:complexType>
+	<!--  -->
+	<xs:complexType name="DeviationCaseRef">
+		<xs:attribute name="Gid" type="PT:DeviationCaseGid" use="required"/>
+	</xs:complexType>
+	<!--  -->
+	<xs:complexType name="NamedJourneyPatternRef">
+		<xs:attribute name="Gid" type="PT:AbstractGid" use="required"/>
+	</xs:complexType>
+	<!--  *********************************************************  -->
+	<xs:simpleType name="PointGid">
+		<xs:restriction base="xs:unsignedLong">
+			<xs:minInclusive value="9022000000000000"/>
+			<xs:maxInclusive value="9025999999999999"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<!--  -->
+	<xs:simpleType name="TransportAuthorityGid">
+		<xs:restriction base="xs:unsignedLong">
+			<xs:minInclusive value="9010000000000000"/>
+			<xs:maxInclusive value="9010999999999999"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<!--  -->
+	<xs:simpleType name="ContractorGid">
+		<xs:restriction base="xs:unsignedLong">
+			<xs:minInclusive value="9013000000000000"/>
+			<xs:maxInclusive value="9013999999999999"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<!--  -->
+	<xs:simpleType name="StopPointGid">
+		<xs:restriction base="xs:unsignedLong">
+			<xs:minInclusive value="9022000000000000"/>
+			<xs:maxInclusive value="9022999999999999"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<!--  -->
+	<xs:simpleType name="StopAreaGid">
+		<xs:restriction base="xs:unsignedLong">
+			<xs:minInclusive value="9021000000000000"/>
+			<xs:maxInclusive value="9021999999999999"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<!--  -->
+	<xs:simpleType name="JourneyPatternPointGid">
+		<xs:restriction base="xs:unsignedLong">
+			<xs:minInclusive value="9025000000000000"/>
+			<xs:maxInclusive value="9025999999999999"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<!--  -->
+	<xs:simpleType name="AbstractGid">
+		<xs:restriction base="xs:unsignedLong">
+			<xs:minInclusive value="0000000000000000"/>
+			<xs:maxInclusive value="8999999999999999"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<!--  -->
+	<xs:simpleType name="VehicleJourneyGid">
+		<xs:restriction base="xs:unsignedLong">
+			<xs:minInclusive value="9015000000000000"/>
+			<xs:maxInclusive value="9016999999999999"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<!--  -->
+	<xs:simpleType name="DirectionGid">
+		<xs:restriction base="xs:unsignedLong">
+			<xs:minInclusive value="9014000000000000"/>
+			<xs:maxInclusive value="9014999999999999"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<!--  -->
+	<xs:simpleType name="DirectionOfLineGid">
+		<xs:restriction base="xs:unsignedLong">
+			<xs:minInclusive value="9012000000000000"/>
+			<xs:maxInclusive value="9012999999999999"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<!--  -->
+	<xs:simpleType name="LineGid">
+		<xs:restriction base="xs:unsignedLong">
+			<xs:minInclusive value="9011000000000000"/>
+			<xs:maxInclusive value="9011999999999999"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<!--  -->
+	<xs:simpleType name="VehicleGid">
+		<xs:restriction base="xs:unsignedLong">
+			<xs:minInclusive value="9031000000000000"/>
+			<xs:maxInclusive value="9031999999999999"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<!--  -->
+	<xs:simpleType name="EmployeeGid">
+		<xs:restriction base="xs:unsignedLong">
+			<xs:minInclusive value="9051000000000000"/>
+			<xs:maxInclusive value="9051999999999999"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<!--  -->
+	<xs:simpleType name="BlockGid">
+		<xs:restriction base="xs:unsignedLong">
+			<xs:minInclusive value="9041000000000000"/>
+			<xs:maxInclusive value="9041999999999999"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<!--  -->
+	<xs:simpleType name="PlaceGid">
+		<xs:restriction base="xs:unsignedLong">
+			<xs:minInclusive value="9091000000000000"/>
+			<xs:maxInclusive value="9091999999999999"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<!--  -->
+	<xs:simpleType name="DutyGid">
+		<xs:restriction base="xs:unsignedLong">
+			<xs:minInclusive value="9061000000000000"/>
+			<xs:maxInclusive value="9061999999999999"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<!--  -->
+	<xs:simpleType name="BridgingDeviceGid">
+		<xs:restriction base="xs:unsignedLong">
+			<xs:minInclusive value="9095000000000000"/>
+			<xs:maxInclusive value="9095999999999999"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<!--  -->
+	<xs:simpleType name="StationEntrancePointGid">
+		<xs:restriction base="xs:unsignedLong">
+			<xs:minInclusive value="9023000000000000"/>
+			<xs:maxInclusive value="9023999999999999"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<!--  -->
+	<xs:simpleType name="DeviationCaseGid">
+		<xs:restriction base="xs:unsignedLong">
+			<xs:minInclusive value="9076000000000000"/>
+			<xs:maxInclusive value="9076999999999999"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<!--  -->
+	<xs:simpleType name="AssignableGid">
+		<xs:annotation>
+			<xs:documentation>One can sign on Service Journeys, Dead Runs, Blocks, Drivers (using their employee number), Duties and also report that a Vehicle is available in the system.</xs:documentation>
+		</xs:annotation>
+		<xs:union memberTypes="PT:VehicleJourneyGid PT:BlockGid PT:EmployeeGid PT:DutyGid PT:VehicleGid"/>
+	</xs:simpleType>
+</xs:schema>

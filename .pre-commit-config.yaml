@@ -3,6 +3,7 @@ repos:
   rev: v4.4.0
   hooks:
   - id: check-added-large-files
+    args: ['--maxkb=1000']
   - id: check-docstring-first
   - id: check-merge-conflict
   - id: check-yaml
@@ -18,3 +19,16 @@ repos:
   rev: v0.40.2
   hooks:
   - id: yapf
+- repo: https://github.com/hadialqattan/pycln
+  rev: v2.4.0
+  hooks:
+  - id: pycln
+    args: [--all]
+- repo: https://github.com/pycqa/isort
+  rev: 5.13.2
+  hooks:
+  - id: isort
+    name: isort  (python)
+    args: ['--force-single-line-imports',
+           '--ensure-newline-before-comments',
+           '--line-length=79']
