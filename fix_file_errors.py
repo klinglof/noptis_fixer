@@ -36,7 +36,9 @@ def fix_add_missing_include(content):
 
 def fix_incorrect_schema_version(content):
     """Fix incorrect version: ROI_FromPubTrans Version is 3.0.9, not 3.0.8."""
-    return content.replace('version="3.0.8">', 'version="3.0.9">')
+    if 'Version 3.0.9' in content:
+        return content.replace('version="3.0.8">', 'version="3.0.9">')
+    return content
 
 
 def apply_fixes(schema_root_path: pathlib.Path, fix_path: pathlib.Path):
